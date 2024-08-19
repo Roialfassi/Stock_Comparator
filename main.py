@@ -15,6 +15,18 @@ stock1_color = "blue"
 stock2_color = "#ffae21"
 
 
+# Exception handling function
+def handle_exceptions(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            # st.error(f"An error occurred: {e}")
+            return None
+
+    return wrapper
+
+
 def get_stock_data(ticker, start_date):
     try:
         stock = yf.Ticker(ticker)
@@ -52,7 +64,15 @@ def display_stock_prices_chart(data1, data2, ticker1, ticker2):
         st.error(f"Error displaying stock prices chart: {e}")
 
 
-def display_results(ticker1, ticker2, performance1, performance2, data1, data2):
+# Calculate investment growth
+@handle_exceptions
+def calculate_investment_growth(data, initial_investment=100):
+    initial_price = data['Close'].iloc[0]
+    current_price = data['Close'].iloc[-1]
+    return (current_price / initial_price) * initial_investment
+
+
+def display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date):
     try:
         # st.subheader(f"Performance Comparison: {ticker1} vs {ticker2}")
 
@@ -85,15 +105,25 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2):
             .applymap(lambda val: colorize(val, ticker2), subset=[ticker2]) \
             .applymap(lambda val: colorize(val, 'Winner'), subset=['Winner']) \
             .set_table_styles({
-                ticker1: [{'selector': 'th', 'props': [('background-color', 'yellow'), ('color', 'black')]}],
-                ticker2: [{'selector': 'th', 'props': [('background-color', 'lightblue'), ('color', 'black')]}],
-                'Winner': [{'selector': 'th', 'props': [('background-color', 'gray'), ('color', 'white')]}],
-                'Year': [{'selector': 'th', 'props': [('background-color', 'white'), ('color', 'black')]}]
-            })
+            ticker1: [{'selector': 'th', 'props': [('background-color', 'yellow'), ('color', 'black')]}],
+            ticker2: [{'selector': 'th', 'props': [('background-color', 'lightblue'), ('color', 'black')]}],
+            'Winner': [{'selector': 'th', 'props': [('background-color', 'gray'), ('color', 'white')]}],
+            'Year': [{'selector': 'th', 'props': [('background-color', 'white'), ('color', 'black')]}]
+        })
 
         st.write("### Yearly Comparison Grid by percentage each year")
         st.write(styled_df)
         display_stock_prices_chart(data1, data2, ticker1, ticker2)
+
+        # Calculate and display investment growth
+        investment1 = calculate_investment_growth(data1)
+        investment2 = calculate_investment_growth(data2)
+        st.write("---")
+        st.markdown(
+            f"If you invested **100** dollars in **{ticker1}** at **{start_date}** , you would have **{investment1:.2f}** dollars today.")
+        st.markdown(
+            f"If you invested **100** dollars in **{ticker2}** at **{start_date}** , you would have  **{investment2:.2f}** dollars today.")
+        st.write("---")
 
         # Plotting yearly performance
         fig, ax = plt.subplots(figsize=(10, 5))
@@ -127,6 +157,7 @@ def display_general_info(ticker):
         st.error(f"Error displaying general information for {ticker}: {e}")
 
 
+@handle_exceptions
 def display_news(ticker):
     try:
         stock = yf.Ticker(ticker)
@@ -136,7 +167,7 @@ def display_news(ticker):
             st.write(f"**{article['title']}**")
             st.write(f"[Read more]({article['link']})")
     except Exception as e:
-        st.error(f"Error displaying news for {ticker}: {e}")
+        st.error(f"Error displaying news for {ticker}")
 
 
 def main():
@@ -165,7 +196,7 @@ def main():
             performance1 = calculate_yearly_performance(data1)
             performance2 = calculate_yearly_performance(data2)
 
-            display_results(ticker1, ticker2, performance1, performance2, data1, data2)
+            display_results(ticker1, ticker2, performance1, performance2, data1, data2 ,start_date )
 
             st.write("---")
             display_general_info(ticker1)
@@ -179,11 +210,13 @@ def main():
             <hr style="margin-top: 50px;">
             <div style="text-align: center;">
                 <p style="font-size: 14px;">
+                Developed by<a href="https://github.com/Roialfassi" target="_blank">Roi Alfassi</a> |
                 Powered by <a href="https://streamlit.io/" target="_blank">Streamlit</a> and 
                 <a href="https://pypi.org/project/yfinance/" target="_blank">yFinance</a></p>
                 <p style="font-size: 12px; color: grey;">© 2024 Roi Alfassi. All rights reserved.</p>
             </div>
             """, unsafe_allow_html=True)
+
 
 if __name__ == "__main__":
     main()
