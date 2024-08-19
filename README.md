@@ -16,7 +16,7 @@ To run this app locally, you'll need to have Python installed. Follow these step
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/roialfassi/stock-comparator.git
+    git clone https://github.com/Roialfassi/Stock_Comparator.git
     cd stock-performance-comparison
     ```
 
@@ -45,7 +45,7 @@ To run this app locally, you'll need to have Python installed. Follow these step
 
 This app is deployed on Streamlit Community Cloud. You can access it directly via this link:
 
-[https://your-username-streamlit-app.streamlit.app](https://your-username-streamlit-app.streamlit.app)
+[https://stock-comparator.streamlit.app/](https://stock-comparator.streamlit.app/)
 
 ## Contributing
 
@@ -62,4 +62,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any inquiries or feedback, feel free to reach out at [your-email@example.com](mailto:your-email@example.com).
+For any inquiries or feedback, feel free to reach out at [roialfassi+stock_app@gmail.com](mailto:roialfassi+stock_app@gmail.com).
