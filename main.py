@@ -175,7 +175,15 @@ def main():
             display_news(ticker1)
             st.write("---")
             display_news(ticker2)
-
+            st.markdown("""
+            <hr style="margin-top: 50px;">
+            <div style="text-align: center;">
+                <p style="font-size: 14px;">
+                Powered by <a href="https://streamlit.io/" target="_blank">Streamlit</a> and 
+                <a href="https://pypi.org/project/yfinance/" target="_blank">yFinance</a></p>
+                <p style="font-size: 12px; color: grey;">© 2024 Roi Alfassi. All rights reserved.</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
