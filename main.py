@@ -2,6 +2,7 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.graph_objs as go
 
 # Set page configuration
 st.set_page_config(
@@ -11,8 +12,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-stock1_color = "blue"
-stock2_color = "#ffae21"
+# Constants for colors
+STOCK1_COLOR = "blue"
+STOCK2_COLOR = "#ffae21"
+DEFAULT_INVESTMENT = 100
 
 
 # Exception handling function
@@ -27,49 +30,183 @@ def handle_exceptions(func):
     return wrapper
 
 
+@handle_exceptions
 def get_stock_data(ticker, start_date):
-    try:
-        stock = yf.Ticker(ticker)
-        data = stock.history(start=start_date)
-        data['Year'] = data.index.year
-        return data
-    except Exception as e:
-        st.error(f"Error fetching data for {ticker}: {e}")
-        return pd.DataFrame()
+    stock = yf.Ticker(ticker)
+    data = stock.history(start=start_date)
+    data['Year'] = data.index.year
+    return data
 
 
+@handle_exceptions
 def calculate_yearly_performance(data):
-    try:
-        yearly_returns = data['Close'].resample('Y').ffill().pct_change().dropna() * 100
-        return yearly_returns
-    except Exception as e:
-        st.error(f"Error calculating yearly performance: {e}")
-        return pd.Series()
+    yearly_returns = data['Close'].resample('Y').ffill().pct_change().dropna() * 100
+    return yearly_returns
 
 
+@handle_exceptions
 def display_stock_prices_chart(data1, data2, ticker1, ticker2):
-    try:
-        st.subheader(f"Stock Price History: {ticker1} vs {ticker2}")
+    st.subheader(f"Stock Price History: {ticker1} vs {ticker2}")
 
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.plot(data1.index, data1['Close'], label=ticker1, color=stock1_color)
-        ax.plot(data2.index, data2['Close'], label=ticker2, color=stock2_color)
+    # Create traces for each stock
+    trace1 = go.Scatter(
+        x=data1.index,
+        y=data1['Close'],
+        mode='lines',
+        name=ticker1,
+        line=dict(color=STOCK1_COLOR),
+        hovertemplate=f'<b>{ticker1}</b><br>'
+                      f'<b>Date:</b> %{{x|%b %d, %Y}}<br>'
+                      f'<b>Price:</b> $%{{y:.2f}}<extra></extra>'
+    )
 
-        ax.set_title('Stock Prices Over Time')
-        ax.set_xlabel('Year')
-        ax.set_ylabel('Stock Price (USD)')
-        ax.legend()
-        st.pyplot(fig)
-    except Exception as e:
-        st.error(f"Error displaying stock prices chart: {e}")
+    trace2 = go.Scatter(
+        x=data2.index,
+        y=data2['Close'],
+        mode='lines',
+        name=ticker2,
+        line=dict(color=STOCK2_COLOR),
+        hovertemplate=f'<b>{ticker2}</b><br>'
+                      f'<b>Date:</b> %{{x|%b %d, %Y}}<br>'
+                      f'<b>Price:</b> $%{{y:.2f}}<extra></extra>'
+    )
+
+    # Create the layout for the chart
+    layout = go.Layout(
+        title=f'Stock Prices Over Time: {ticker1} vs {ticker2}',
+        xaxis=dict(title='Year', tickformat='%Y'),
+        yaxis=dict(title='Stock Price (USD)'),
+        hovermode='x unified',
+        hoverlabel=dict(
+            bgcolor='white',
+            bordercolor='black',
+            font=dict(
+                size=14,
+                color='black'
+            )
+        ),
+        margin=dict(l=40, r=40, t=40, b=40)
+    )
+
+    # Create the figure with the data and layout
+    fig = go.Figure(data=[trace1, trace2], layout=layout)
+
+    # Display the interactive chart
+    st.plotly_chart(fig, use_container_width=True)
+
+
+@handle_exceptions
+def display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2):
+    st.subheader(f"Stock Price History Normalized: {ticker1} vs {ticker2}")
+
+    # Normalize the stock prices to start at the same value
+    start_price = min(data1['Close'][0], data2['Close'][0])
+    data1['Normalized_Price'] = data1['Close'] / data1['Close'][0] * start_price
+    data2['Normalized_Price'] = data2['Close'] / data2['Close'][0] * start_price
+
+    # Create traces for each stock
+    trace1 = go.Scatter(
+        x=data1.index,
+        y=data1['Normalized_Price'],
+        mode='lines',
+        name=ticker1,
+        line=dict(color=STOCK1_COLOR),
+        hovertemplate=f'<b>{ticker1}</b><br>'
+                      f'<b>Date:</b> %{{x|%b %d, %Y}}<br>'
+                      f'<b>Price:</b> $%{{y:.2f}}<extra></extra>'
+    )
+
+    trace2 = go.Scatter(
+        x=data2.index,
+        y=data2['Normalized_Price'],
+        mode='lines',
+        name=ticker2,
+        line=dict(color=STOCK2_COLOR),
+        hovertemplate=f'<b>{ticker2}</b><br>'
+                      f'<b>Date:</b> %{{x|%b %d, %Y}}<br>'
+                      f'<b>Price:</b> $%{{y:.2f}}<extra></extra>'
+    )
+
+    # Create the layout for the chart
+    layout = go.Layout(
+        title=f'Stock Prices Over Time Normalized: {ticker1} vs {ticker2}',
+        xaxis=dict(title='Year', tickformat='%Y'),
+        yaxis=dict(title='Normalized Stock Price (USD)'),
+        hovermode='x unified',
+        hoverlabel=dict(
+            bgcolor='white',
+            bordercolor='black',
+            font=dict(
+                size=14,
+                color='black'
+            )
+        ),
+        margin=dict(l=40, r=40, t=40, b=40)
+    )
+
+    # Create the figure with the data and layout
+    fig = go.Figure(data=[trace1, trace2], layout=layout)
+
+    # Display the interactive chart
+    st.plotly_chart(fig, use_container_width=True)
 
 
 # Calculate investment growth
 @handle_exceptions
-def calculate_investment_growth(data, initial_investment=100):
+def calculate_investment_growth(data, initial_investment=DEFAULT_INVESTMENT):
     initial_price = data['Close'].iloc[0]
     current_price = data['Close'].iloc[-1]
     return (current_price / initial_price) * initial_investment
+
+
+@handle_exceptions
+def display_yearly_performance_comparison(performance1, performance2, ticker1, ticker2):
+    st.subheader(f"Yearly Performance Comparison: {ticker1} vs {ticker2}")
+
+    # Create traces for each stock's yearly performance
+    trace1 = go.Bar(
+        x=performance1.index.year,
+        y=performance1.values,
+        name=ticker1,
+        marker_color=STOCK1_COLOR,
+        hovertemplate=f'<b>{ticker1}</b><br>'
+                      f'<b>Year:</b> %{{x}}<br>'
+                      f'<b>Return:</b> %{{y:.2f}}%<extra></extra>'
+    )
+
+    trace2 = go.Bar(
+        x=performance2.index.year,
+        y=performance2.values,
+        name=ticker2,
+        marker_color=STOCK2_COLOR,
+        hovertemplate=f'<b>{ticker2}</b><br>'
+                      f'<b>Year:</b> %{{x}}<br>'
+                      f'<b>Return:</b> %{{y:.2f}}%<extra></extra>'
+    )
+
+    # Create the layout for the chart
+    layout = go.Layout(
+        title='Yearly Performance Comparison',
+        xaxis=dict(title='Year', tickformat='%Y'),
+        yaxis=dict(title='Yearly Return (%)'),
+        barmode='group',
+        hovermode='x unified',
+        hoverlabel=dict(
+            bgcolor='white',
+            bordercolor='black',
+            font=dict(
+                size=14,
+                color='black'
+            )
+        ),
+        margin=dict(l=40, r=40, t=40, b=40)
+    )
+
+    # Create the figure with the data and layout
+    fig = go.Figure(data=[trace1, trace2], layout=layout)
+
+    # Display the interactive chart
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date):
@@ -98,7 +235,7 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
                 color = 'green' if float(val[:-1]) > 0 else 'red'
                 return f'background-color: {color}; color: white'
             elif column == 'Winner':
-                return f'background-color: {stock1_color}; color: white' if val == ticker1 else f'background-color: {stock2_color}; color: white'
+                return f'background-color: {STOCK1_COLOR}; color: white' if val == ticker1 else f'background-color: {STOCK2_COLOR}; color: white'
             return ''
 
         styled_df = comparison_df.style.applymap(lambda val: colorize(val, ticker1), subset=[ticker1]) \
@@ -113,6 +250,7 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
 
         st.write("### Yearly Comparison Grid by percentage each year")
         st.write(styled_df)
+        display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2)
         display_stock_prices_chart(data1, data2, ticker1, ticker2)
 
         # Calculate and display investment growth
@@ -126,48 +264,45 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         st.write("---")
 
         # Plotting yearly performance
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.plot(performance1.index.year, performance1.values, label=ticker1, color=stock1_color, marker='o')
-        ax.plot(performance2.index.year, performance2.values, label=ticker2, color=stock2_color, marker='o')
-        ax.set_title('Yearly Performance Comparison')
-        ax.set_xlabel('Year')
-        ax.set_ylabel('Yearly Return (%)')
-        ax.legend()
-        st.pyplot(fig)
+        # fig, ax = plt.subplots(figsize=(10, 5))
+        # ax.plot(performance1.index.year, performance1.values, label=ticker1, color=STOCK1_COLOR, marker='o')
+        # ax.plot(performance2.index.year, performance2.values, label=ticker2, color=STOCK2_COLOR, marker='o')
+        # ax.set_title('Yearly Performance Comparison')
+        # ax.set_xlabel('Year')
+        # ax.set_ylabel('Yearly Return (%)')
+        # ax.legend()
+        # st.pyplot(fig)
+        display_yearly_performance_comparison(performance1, performance2, ticker1, ticker2)
+
 
 
     except Exception as e:
         st.error(f"Error displaying results: {e}")
 
 
+@handle_exceptions
 def display_general_info(ticker):
-    try:
-        stock = yf.Ticker(ticker)
-        info = stock.info
-        st.subheader(f"General Information for {ticker}")
-        st.write(f"**Company Name:** {info.get('longName', 'N/A')}")
-        st.write(f"**Sector:** {info.get('sector', 'N/A')}")
-        st.write(f"**Industry:** {info.get('industry', 'N/A')}")
-        st.write(f"**Market Cap:** ${info.get('marketCap', 'N/A'):,}")
-        st.write(f"**P/E Ratio:** {info.get('forwardPE', 'N/A')}")
-        st.write(f"**Dividend Yield:** {info.get('dividendYield', 'N/A') * 100:.2f}%")
-        st.write(f"**52-Week High:** ${info.get('fiftyTwoWeekHigh', 'N/A')}")
-        st.write(f"**52-Week Low:** ${info.get('fiftyTwoWeekLow', 'N/A')}")
-    except Exception as e:
-        st.error(f"Error displaying general information for {ticker}: {e}")
+    stock = yf.Ticker(ticker)
+    info = stock.info
+    st.subheader(f"General Information for {ticker}")
+    st.write(f"**Company Name:** {info.get('longName', 'N/A')}")
+    st.write(f"**Sector:** {info.get('sector', 'N/A')}")
+    st.write(f"**Industry:** {info.get('industry', 'N/A')}")
+    st.write(f"**Market Cap:** ${info.get('marketCap', 'N/A'):,}")
+    st.write(f"**P/E Ratio:** {info.get('forwardPE', 'N/A')}")
+    st.write(f"**Dividend Yield:** {info.get('dividendYield', 'N/A') * 100:.2f}%")
+    st.write(f"**52-Week High:** ${info.get('fiftyTwoWeekHigh', 'N/A')}")
+    st.write(f"**52-Week Low:** ${info.get('fiftyTwoWeekLow', 'N/A')}")
 
 
 @handle_exceptions
 def display_news(ticker):
-    try:
-        stock = yf.Ticker(ticker)
-        news = stock.news
-        st.subheader(f"Recent News for {ticker}")
-        for article in news[:5]:
-            st.write(f"**{article['title']}**")
-            st.write(f"[Read more]({article['link']})")
-    except Exception as e:
-        st.error(f"Error displaying news for {ticker}")
+    stock = yf.Ticker(ticker)
+    news = stock.news
+    st.subheader(f"Recent News for {ticker}")
+    for article in news[:5]:
+        st.write(f"**{article['title']}**")
+        st.write(f"[Read more]({article['link']})")
 
 
 def main():
@@ -196,7 +331,7 @@ def main():
             performance1 = calculate_yearly_performance(data1)
             performance2 = calculate_yearly_performance(data2)
 
-            display_results(ticker1, ticker2, performance1, performance2, data1, data2 ,start_date )
+            display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date)
 
             st.write("---")
             display_general_info(ticker1)
