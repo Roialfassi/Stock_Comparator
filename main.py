@@ -38,9 +38,51 @@ def get_stock_data(ticker, start_date):
     return data
 
 
+def adjust_start_date_to_stock_data(start_date, data):
+    """
+    Compare the input start date with the first available date in the stock data.
+    Return the later date in the format of date_input (datetime.date).
+
+    :param start_date: datetime.date - The desired start date for comparison.
+    :param data: pd.DataFrame - The stock data with a datetime index.
+    :return: datetime.date - The adjusted start date.
+    """
+    # Ensure start_date is a pd.Timestamp for compatibility
+    start_date = pd.Timestamp(start_date)
+
+    # Get the first available date in the DataFrame
+    first_date_in_data = data.index.min()
+
+    # Compare the dates and get the later one
+    adjusted_start_date = max(start_date, first_date_in_data)
+
+    # Return the adjusted date in the format of date_input (datetime.date)
+    return adjusted_start_date.date()
+
+
 @handle_exceptions
 def calculate_yearly_performance(data):
-    yearly_returns = data['Close'].resample('Y').ffill().pct_change().dropna() * 100
+    """
+    Calculate the yearly percentage change in closing prices
+    from the first trading day to the last trading day of each year.
+
+    :param data: DataFrame containing stock prices with a 'Close' column.
+    :return: Series with yearly percentage returns.
+    """
+    # Ensure the 'Close' column exists
+    if 'Close' not in data.columns:
+        raise ValueError("DataFrame must contain 'Close' column")
+
+    # Resample to get the first and last closing prices of each year
+    yearly_open = data['Close'].resample('Y').first()  # First closing price of each year
+    yearly_close = data['Close'].resample('Y').last()  # Last closing price of each year
+
+    # Calculate the percentage difference between the first and last closing prices of each year
+    yearly_returns = ((yearly_close - yearly_open) / yearly_open) * 100
+
+    # Drop any potential NaN values (e.g., if there is only one year of data)
+    yearly_returns = yearly_returns.dropna()
+
     return yearly_returns
 
 
@@ -215,7 +257,8 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
 
         # Display stock prices chart        # Scoreboard
         scores = (performance1 > performance2).astype(int).sum(), (performance2 > performance1).astype(int).sum()
-        st.write(f"### Scoreboard: {ticker1} {scores[0]} - {ticker2} {scores[1]}")
+
+        st.write(f"#### Scoreboard: {ticker1} {scores[0]} - {ticker2} {scores[1]}")
 
         # Yearly comparison grid
         comparison_df = pd.DataFrame({
@@ -248,8 +291,8 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
             'Year': [{'selector': 'th', 'props': [('background-color', 'white'), ('color', 'black')]}]
         })
 
-        st.write("### Yearly Comparison Grid by percentage each year")
-        st.write(styled_df)
+        st.write("#### Yearly Comparison Grid by percentage each year")
+        st.dataframe(styled_df)
         display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2)
         display_stock_prices_chart(data1, data2, ticker1, ticker2)
 
@@ -295,6 +338,12 @@ def display_general_info(ticker):
     st.write(f"**52-Week Low:** ${info.get('fiftyTwoWeekLow', 'N/A')}")
 
 
+def get_name(ticker):
+    stock = yf.Ticker(ticker)
+    info = stock.info
+    return info.get('longName', ticker)
+
+
 @handle_exceptions
 def display_news(ticker):
     stock = yf.Ticker(ticker)
@@ -310,10 +359,10 @@ def main():
                                     help="Input the ticker symbol of the first stock/ETF.")
     ticker2 = st.sidebar.text_input("Enter the second ticker", "MSFT",
                                     help="Input the ticker symbol of the second stock/ETF.")
-    start_date = st.sidebar.date_input("Start Date", pd.to_datetime("2014-01-01"),
+    start_date = st.sidebar.date_input("Start Date", pd.to_datetime("2015-01-01"),
                                        help="Choose the starting date for comparison.")
 
-    st.sidebar.write("### Comparison Options")
+    st.sidebar.write("#### Comparison Options")
     compare = st.sidebar.button("Compare Tickers")
 
     if not compare:
@@ -321,12 +370,12 @@ def main():
         st.write("Compare the performance of two stock tickers over the last 10 years.")
 
     if compare:
-        st.header(f"Comparing {ticker1} vs {ticker2}")
         # st.write("---")
-
         data1 = get_stock_data(ticker1, start_date)
         data2 = get_stock_data(ticker2, start_date)
-
+        name1 = get_name(ticker1)
+        name2 = get_name(ticker2)
+        st.subheader(f"Comparing {name1} vs {name2}")
         if not data1.empty and not data2.empty:
             performance1 = calculate_yearly_performance(data1)
             performance2 = calculate_yearly_performance(data2)
