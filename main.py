@@ -3,6 +3,7 @@ import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objs as go
+import time
 
 # Set page configuration
 st.set_page_config(
@@ -29,12 +30,42 @@ def handle_exceptions(func):
 
     return wrapper
 
+def retry_request(func):
+    """Decorator to retry a function call with exponential backoff."""
+    def wrapper(*args, **kwargs):
+        max_retries = 3
+        for i in range(max_retries):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                if i == max_retries - 1:
+                    raise e
+                time.sleep(2 ** i)
+    return wrapper
+
+@st.cache_data(ttl=24*3600)
+@retry_request
+def fetch_stock_info(ticker):
+    stock = yf.Ticker(ticker)
+    return stock.info
+
+@st.cache_data(ttl=3600)
+@retry_request
+def fetch_stock_history(ticker, start_date):
+    stock = yf.Ticker(ticker)
+    return stock.history(start=start_date)
+
+@st.cache_data(ttl=3600)
+@retry_request
+def fetch_stock_news(ticker):
+    stock = yf.Ticker(ticker)
+    return stock.news
 
 @handle_exceptions
 def get_stock_data(ticker, start_date):
-    stock = yf.Ticker(ticker)
-    data = stock.history(start=start_date)
-    data['Year'] = data.index.year
+    data = fetch_stock_history(ticker, start_date)
+    if data is not None:
+        data['Year'] = data.index.year
     return data
 
 
@@ -325,33 +356,45 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
 
 @handle_exceptions
 def display_general_info(ticker):
-    stock = yf.Ticker(ticker)
-    info = stock.info
-    st.subheader(f"General Information for {ticker}")
-    st.write(f"**Company Name:** {info.get('longName', 'N/A')}")
-    st.write(f"**Sector:** {info.get('sector', 'N/A')}")
-    st.write(f"**Industry:** {info.get('industry', 'N/A')}")
-    st.write(f"**Market Cap:** ${info.get('marketCap', 'N/A'):,}")
-    st.write(f"**P/E Ratio:** {info.get('forwardPE', 'N/A')}")
-    st.write(f"**Dividend Yield:** {info.get('dividendYield', 'N/A') * 100:.2f}%")
-    st.write(f"**52-Week High:** ${info.get('fiftyTwoWeekHigh', 'N/A')}")
-    st.write(f"**52-Week Low:** ${info.get('fiftyTwoWeekLow', 'N/A')}")
+    info = fetch_stock_info(ticker)
+    if info:
+        st.subheader(f"General Information for {ticker}")
+        st.write(f"**Company Name:** {info.get('longName', 'N/A')}")
+        st.write(f"**Sector:** {info.get('sector', 'N/A')}")
+        st.write(f"**Industry:** {info.get('industry', 'N/A')}")
+        st.write(f"**Market Cap:** ${info.get('marketCap', 'N/A'):,}")
+        st.write(f"**P/E Ratio:** {info.get('forwardPE', 'N/A')}")
+
+        dividend_yield = info.get('dividendYield', 'N/A')
+        if isinstance(dividend_yield, (int, float)):
+             st.write(f"**Dividend Yield:** {dividend_yield * 100:.2f}%")
+        else:
+             st.write(f"**Dividend Yield:** {dividend_yield}")
+
+        st.write(f"**52-Week High:** ${info.get('fiftyTwoWeekHigh', 'N/A')}")
+        st.write(f"**52-Week Low:** ${info.get('fiftyTwoWeekLow', 'N/A')}")
+    else:
+        st.error(f"Could not fetch general information for {ticker}")
 
 
 def get_name(ticker):
-    stock = yf.Ticker(ticker)
-    info = stock.info
-    return info.get('longName', ticker)
+    try:
+        info = fetch_stock_info(ticker)
+        if info:
+            return info.get('longName', ticker)
+        return ticker
+    except Exception:
+        return ticker
 
 
 @handle_exceptions
 def display_news(ticker):
-    stock = yf.Ticker(ticker)
-    news = stock.news
-    st.subheader(f"Recent News for {ticker}")
-    for article in news[:5]:
-        st.write(f"**{article['title']}**")
-        st.write(f"[Read more]({article['link']})")
+    news = fetch_stock_news(ticker)
+    if news:
+        st.subheader(f"Recent News for {ticker}")
+        for article in news[:5]:
+            st.write(f"**{article['title']}**")
+            st.write(f"[Read more]({article['link']})")
 
 
 def main():
@@ -376,7 +419,7 @@ def main():
         name1 = get_name(ticker1)
         name2 = get_name(ticker2)
         st.subheader(f"Comparing {name1} vs {name2}")
-        if not data1.empty and not data2.empty:
+        if data1 is not None and not data1.empty and data2 is not None and not data2.empty:
             performance1 = calculate_yearly_performance(data1)
             performance2 = calculate_yearly_performance(data2)
 
