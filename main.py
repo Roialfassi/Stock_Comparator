@@ -9,7 +9,7 @@ import time
 st.set_page_config(
     page_title="Stock Performance Comparison",
     page_icon="📈",
-    # layout="wide",  # This makes the view wider
+    layout="wide",  # This makes the view wider
     initial_sidebar_state="expanded"
 )
 
@@ -284,12 +284,14 @@ def display_yearly_performance_comparison(performance1, performance2, ticker1, t
 
 def display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date):
     try:
-        # st.subheader(f"Performance Comparison: {ticker1} vs {ticker2}")
-
-        # Display stock prices chart        # Scoreboard
+        # Scoreboard
         scores = (performance1 > performance2).astype(int).sum(), (performance2 > performance1).astype(int).sum()
 
-        st.write(f"#### Scoreboard: {ticker1} {scores[0]} - {ticker2} {scores[1]}")
+        col1, col2 = st.columns(2)
+        with col1:
+             st.metric(label=f"{ticker1} Wins", value=int(scores[0]), delta=None)
+        with col2:
+             st.metric(label=f"{ticker2} Wins", value=int(scores[1]), delta=None)
 
         # Yearly comparison grid
         comparison_df = pd.DataFrame({
@@ -324,6 +326,16 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
 
         st.write("#### Yearly Comparison Grid by percentage each year")
         st.dataframe(styled_df)
+
+        # Download CSV
+        csv = comparison_df.to_csv().encode('utf-8')
+        st.download_button(
+            label="Download Data as CSV",
+            data=csv,
+            file_name=f'{ticker1}_vs_{ticker2}_yearly_performance.csv',
+            mime='text/csv',
+        )
+
         display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2)
         display_stock_prices_chart(data1, data2, ticker1, ticker2)
 
@@ -331,50 +343,54 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         investment1 = calculate_investment_growth(data1)
         investment2 = calculate_investment_growth(data2)
         st.write("---")
-        st.markdown(
-            f"If you invested **100** dollars in **{ticker1}** at **{start_date}** , you would have **{investment1:.2f}** dollars today.")
-        st.markdown(
-            f"If you invested **100** dollars in **{ticker2}** at **{start_date}** , you would have  **{investment2:.2f}** dollars today.")
+
+        st.subheader(f"Investment Growth (Initial: ${DEFAULT_INVESTMENT})")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(label=f"{ticker1} Value Today", value=f"${investment1:.2f}", delta=f"{((investment1 - DEFAULT_INVESTMENT)/DEFAULT_INVESTMENT)*100:.2f}%")
+        with col2:
+            st.metric(label=f"{ticker2} Value Today", value=f"${investment2:.2f}", delta=f"{((investment2 - DEFAULT_INVESTMENT)/DEFAULT_INVESTMENT)*100:.2f}%")
+
         st.write("---")
 
-        # Plotting yearly performance
-        # fig, ax = plt.subplots(figsize=(10, 5))
-        # ax.plot(performance1.index.year, performance1.values, label=ticker1, color=STOCK1_COLOR, marker='o')
-        # ax.plot(performance2.index.year, performance2.values, label=ticker2, color=STOCK2_COLOR, marker='o')
-        # ax.set_title('Yearly Performance Comparison')
-        # ax.set_xlabel('Year')
-        # ax.set_ylabel('Yearly Return (%)')
-        # ax.legend()
-        # st.pyplot(fig)
         display_yearly_performance_comparison(performance1, performance2, ticker1, ticker2)
-
-
 
     except Exception as e:
         st.error(f"Error displaying results: {e}")
 
 
 @handle_exceptions
-def display_general_info(ticker):
-    info = fetch_stock_info(ticker)
-    if info:
-        st.subheader(f"General Information for {ticker}")
-        st.write(f"**Company Name:** {info.get('longName', 'N/A')}")
-        st.write(f"**Sector:** {info.get('sector', 'N/A')}")
-        st.write(f"**Industry:** {info.get('industry', 'N/A')}")
-        st.write(f"**Market Cap:** ${info.get('marketCap', 'N/A'):,}")
-        st.write(f"**P/E Ratio:** {info.get('forwardPE', 'N/A')}")
+def display_side_by_side_info(ticker1, ticker2):
+    st.subheader(f"General Information Comparison")
 
-        dividend_yield = info.get('dividendYield', 'N/A')
-        if isinstance(dividend_yield, (int, float)):
-             st.write(f"**Dividend Yield:** {dividend_yield * 100:.2f}%")
-        else:
-             st.write(f"**Dividend Yield:** {dividend_yield}")
+    col1, col2 = st.columns(2)
 
-        st.write(f"**52-Week High:** ${info.get('fiftyTwoWeekHigh', 'N/A')}")
-        st.write(f"**52-Week Low:** ${info.get('fiftyTwoWeekLow', 'N/A')}")
-    else:
-        st.error(f"Could not fetch general information for {ticker}")
+    info1 = fetch_stock_info(ticker1)
+    info2 = fetch_stock_info(ticker2)
+
+    def display_info_in_col(col, ticker, info):
+        with col:
+            st.markdown(f"### {ticker}")
+            if info:
+                st.write(f"**Company Name:** {info.get('longName', 'N/A')}")
+                st.write(f"**Sector:** {info.get('sector', 'N/A')}")
+                st.write(f"**Industry:** {info.get('industry', 'N/A')}")
+                st.write(f"**Market Cap:** ${info.get('marketCap', 'N/A'):,}")
+                st.write(f"**P/E Ratio:** {info.get('forwardPE', 'N/A')}")
+
+                dividend_yield = info.get('dividendYield', 'N/A')
+                if isinstance(dividend_yield, (int, float)):
+                     st.write(f"**Dividend Yield:** {dividend_yield * 100:.2f}%")
+                else:
+                     st.write(f"**Dividend Yield:** {dividend_yield}")
+
+                st.write(f"**52-Week High:** ${info.get('fiftyTwoWeekHigh', 'N/A')}")
+                st.write(f"**52-Week Low:** ${info.get('fiftyTwoWeekLow', 'N/A')}")
+            else:
+                st.error(f"Could not fetch general information for {ticker}")
+
+    display_info_in_col(col1, ticker1, info1)
+    display_info_in_col(col2, ticker2, info2)
 
 
 def get_name(ticker):
@@ -391,10 +407,10 @@ def get_name(ticker):
 def display_news(ticker):
     news = fetch_stock_news(ticker)
     if news:
-        st.subheader(f"Recent News for {ticker}")
-        for article in news[:5]:
-            st.write(f"**{article['title']}**")
-            st.write(f"[Read more]({article['link']})")
+        with st.expander(f"Recent News for {ticker}"):
+            for article in news[:5]:
+                st.write(f"**{article['title']}**")
+                st.write(f"[Read more]({article['link']})")
 
 
 def main():
@@ -426,12 +442,9 @@ def main():
             display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date)
 
             st.write("---")
-            display_general_info(ticker1)
-            st.write("---")
-            display_general_info(ticker2)
+            display_side_by_side_info(ticker1, ticker2)
             st.write("---")
             display_news(ticker1)
-            st.write("---")
             display_news(ticker2)
             st.markdown("""
             <hr style="margin-top: 50px;">
