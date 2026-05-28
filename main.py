@@ -63,17 +63,10 @@ def fetch_stock_news(ticker):
 
 @handle_exceptions
 def get_stock_data(ticker, start_date):
-<<<<<<< Updated upstream
     data = fetch_stock_history(ticker, start_date)
-    if data is not None:
-        data['Year'] = data.index.year
-=======
-    stock = yf.Ticker(ticker)
-    data = stock.history(start=start_date)
-    if data.empty:
+    if data is None or data.empty:
         return data
     data['Year'] = data.index.year
->>>>>>> Stashed changes
     return data
 
 
@@ -290,8 +283,6 @@ def display_yearly_performance_comparison(performance1, performance2, ticker1, t
 
 def display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date):
     try:
-<<<<<<< Updated upstream
-=======
         if performance1 is None or performance2 is None or performance1.empty or performance2.empty:
             st.warning("Not enough yearly data to compare these tickers.")
             return
@@ -301,7 +292,6 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         performance1 = performance1.loc[common_years]
         performance2 = performance2.loc[common_years]
 
->>>>>>> Stashed changes
         # Scoreboard
         scores = (performance1 > performance2).astype(int).sum(), (performance2 > performance1).astype(int).sum()
 
@@ -361,23 +351,22 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         investment1 = calculate_investment_growth(data1)
         investment2 = calculate_investment_growth(data2)
         st.write("---")
-<<<<<<< Updated upstream
 
         st.subheader(f"Investment Growth (Initial: ${DEFAULT_INVESTMENT})")
         col1, col2 = st.columns(2)
         with col1:
-            st.metric(label=f"{ticker1} Value Today", value=f"${investment1:.2f}", delta=f"{((investment1 - DEFAULT_INVESTMENT)/DEFAULT_INVESTMENT)*100:.2f}%")
+            if investment1 is not None:
+                delta_pct1 = ((investment1 - DEFAULT_INVESTMENT) / DEFAULT_INVESTMENT) * 100
+                st.metric(label=f"{ticker1} Value Today", value=f"${investment1:.2f}", delta=f"{delta_pct1:.2f}%")
+            else:
+                st.metric(label=f"{ticker1} Value Today", value="N/A")
         with col2:
-            st.metric(label=f"{ticker2} Value Today", value=f"${investment2:.2f}", delta=f"{((investment2 - DEFAULT_INVESTMENT)/DEFAULT_INVESTMENT)*100:.2f}%")
+            if investment2 is not None:
+                delta_pct2 = ((investment2 - DEFAULT_INVESTMENT) / DEFAULT_INVESTMENT) * 100
+                st.metric(label=f"{ticker2} Value Today", value=f"${investment2:.2f}", delta=f"{delta_pct2:.2f}%")
+            else:
+                st.metric(label=f"{ticker2} Value Today", value="N/A")
 
-=======
-        if investment1 is not None:
-            st.markdown(
-                f"If you invested **100** dollars in **{ticker1}** at **{start_date}** , you would have **{investment1:.2f}** dollars today.")
-        if investment2 is not None:
-            st.markdown(
-                f"If you invested **100** dollars in **{ticker2}** at **{start_date}** , you would have  **{investment2:.2f}** dollars today.")
->>>>>>> Stashed changes
         st.write("---")
 
         display_yearly_performance_comparison(performance1, performance2, ticker1, ticker2)
@@ -415,9 +404,8 @@ def _fmt_number(value, prefix="", suffix=""):
 
 
 @handle_exceptions
-<<<<<<< Updated upstream
 def display_side_by_side_info(ticker1, ticker2):
-    st.subheader(f"General Information Comparison")
+    st.subheader("General Information Comparison")
 
     col1, col2 = st.columns(2)
 
@@ -428,39 +416,19 @@ def display_side_by_side_info(ticker1, ticker2):
         with col:
             st.markdown(f"### {ticker}")
             if info:
-                st.write(f"**Company Name:** {info.get('longName', 'N/A')}")
-                st.write(f"**Sector:** {info.get('sector', 'N/A')}")
-                st.write(f"**Industry:** {info.get('industry', 'N/A')}")
-                st.write(f"**Market Cap:** ${info.get('marketCap', 'N/A'):,}")
-                st.write(f"**P/E Ratio:** {info.get('forwardPE', 'N/A')}")
-
-                dividend_yield = info.get('dividendYield', 'N/A')
-                if isinstance(dividend_yield, (int, float)):
-                     st.write(f"**Dividend Yield:** {dividend_yield * 100:.2f}%")
-                else:
-                     st.write(f"**Dividend Yield:** {dividend_yield}")
-
-                st.write(f"**52-Week High:** ${info.get('fiftyTwoWeekHigh', 'N/A')}")
-                st.write(f"**52-Week Low:** ${info.get('fiftyTwoWeekLow', 'N/A')}")
+                st.write(f"**Company Name:** {info.get('longName') or 'N/A'}")
+                st.write(f"**Sector:** {info.get('sector') or 'N/A'}")
+                st.write(f"**Industry:** {info.get('industry') or 'N/A'}")
+                st.write(f"**Market Cap:** {_fmt_money(info.get('marketCap'))}")
+                st.write(f"**P/E Ratio:** {_fmt_number(info.get('forwardPE'))}")
+                st.write(f"**Dividend Yield:** {_fmt_percent(info.get('dividendYield'))}")
+                st.write(f"**52-Week High:** {_fmt_number(info.get('fiftyTwoWeekHigh'), prefix='$')}")
+                st.write(f"**52-Week Low:** {_fmt_number(info.get('fiftyTwoWeekLow'), prefix='$')}")
             else:
                 st.error(f"Could not fetch general information for {ticker}")
 
     display_info_in_col(col1, ticker1, info1)
     display_info_in_col(col2, ticker2, info2)
-=======
-def display_general_info(ticker):
-    stock = yf.Ticker(ticker)
-    info = stock.info
-    st.subheader(f"General Information for {ticker}")
-    st.write(f"**Company Name:** {info.get('longName') or 'N/A'}")
-    st.write(f"**Sector:** {info.get('sector') or 'N/A'}")
-    st.write(f"**Industry:** {info.get('industry') or 'N/A'}")
-    st.write(f"**Market Cap:** {_fmt_money(info.get('marketCap'))}")
-    st.write(f"**P/E Ratio:** {_fmt_number(info.get('forwardPE'))}")
-    st.write(f"**Dividend Yield:** {_fmt_percent(info.get('dividendYield'))}")
-    st.write(f"**52-Week High:** {_fmt_number(info.get('fiftyTwoWeekHigh'), prefix='$')}")
-    st.write(f"**52-Week Low:** {_fmt_number(info.get('fiftyTwoWeekLow'), prefix='$')}")
->>>>>>> Stashed changes
 
 
 def get_name(ticker):
@@ -494,32 +462,22 @@ def _extract_news_item(article):
 
 @handle_exceptions
 def display_news(ticker):
-<<<<<<< Updated upstream
-    news = fetch_stock_news(ticker)
-    if news:
-        with st.expander(f"Recent News for {ticker}"):
-            for article in news[:5]:
-                st.write(f"**{article['title']}**")
-                st.write(f"[Read more]({article['link']})")
-=======
-    stock = yf.Ticker(ticker)
-    news = stock.news or []
-    st.subheader(f"Recent News for {ticker}")
-    if not news:
-        st.write("_No recent news available._")
-        return
-    shown = 0
-    for article in news:
-        title, link = _extract_news_item(article)
-        if not title:
-            continue
-        st.write(f"**{title}**")
-        if link:
-            st.write(f"[Read more]({link})")
-        shown += 1
-        if shown >= 5:
-            break
->>>>>>> Stashed changes
+    news = fetch_stock_news(ticker) or []
+    with st.expander(f"Recent News for {ticker}"):
+        if not news:
+            st.write("_No recent news available._")
+            return
+        shown = 0
+        for article in news:
+            title, link = _extract_news_item(article)
+            if not title:
+                continue
+            st.write(f"**{title}**")
+            if link:
+                st.write(f"[Read more]({link})")
+            shown += 1
+            if shown >= 5:
+                break
 
 
 def main():
@@ -543,9 +501,6 @@ def main():
         name1 = get_name(ticker1)
         name2 = get_name(ticker2)
         st.subheader(f"Comparing {name1} vs {name2}")
-<<<<<<< Updated upstream
-        if data1 is not None and not data1.empty and data2 is not None and not data2.empty:
-=======
 
         missing = []
         if data1 is None or data1.empty:
@@ -558,7 +513,6 @@ def main():
             return
 
         if not data1.empty and not data2.empty:
->>>>>>> Stashed changes
             performance1 = calculate_yearly_performance(data1)
             performance2 = calculate_yearly_performance(data2)
 
