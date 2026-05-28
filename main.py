@@ -6,6 +6,14 @@ import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import time
 
+# Pandas 2.2+ requires 'YE' for year-end resample; older versions only know 'Y'.
+# Pandas 3.0+ removed 'Y' entirely (raises ValueError). Detect once at import.
+try:
+    pd.tseries.frequencies.to_offset('YE')
+    _YEAR_END_FREQ = 'YE'
+except ValueError:
+    _YEAR_END_FREQ = 'Y'
+
 # Set page configuration
 st.set_page_config(
     page_title="Stock Performance Comparison",
@@ -89,8 +97,6 @@ def load_ticker_universe():
 
 def _format_picker_option(ticker, universe_df):
     """Render a dropdown option like 'AAPL — Apple Inc. (Stock)'."""
-    if ticker == "__manual__":
-        return "Type a ticker manually..."
     row = universe_df.loc[universe_df["Ticker"] == ticker]
     if row.empty:
         return ticker
@@ -99,39 +105,89 @@ def _format_picker_option(ticker, universe_df):
     return f"{ticker} — {name} ({category})"
 
 
+def search_universe(universe_df, query, limit=12):
+    """
+    Rank tickers/names against a free-text query. Best matches first:
+    exact ticker > ticker prefix > name prefix > ticker contains > name contains.
+    """
+    if universe_df.empty or not query:
+        return universe_df.iloc[0:0]
+
+    qu = query.strip().upper()
+    ql = query.strip().lower()
+    tick = universe_df["Ticker"]
+    name_l = universe_df["Name"].str.lower()
+
+    score = pd.Series(99, index=universe_df.index)
+    # Apply weakest match last-overridable-first so stronger masks win.
+    score = score.mask(name_l.str.contains(ql, regex=False), 4)
+    score = score.mask(tick.str.contains(qu, regex=False), 3)
+    score = score.mask(name_l.str.startswith(ql), 2)
+    score = score.mask(tick.str.startswith(qu), 1)
+    score = score.mask(tick == qu, 0)
+
+    matched = universe_df.assign(match_score=score)
+    matched = matched[matched["match_score"] < 99]
+    matched = matched.sort_values(
+        ["match_score", "Name"],
+        key=lambda s: s if s.name == "match_score" else s.str.lower(),
+    )
+    return matched.head(limit)
+
+
 def ticker_picker(label, default_ticker, key_prefix, universe_df):
     """
-    Searchable picker that defaults to a known ticker but lets users
-    fall back to a manual text input for tickers not in the universe.
+    Free-text ticker entry with live, friendly suggestions.
+
+    The user types a company/ETF name OR a ticker. Matching entries from the
+    local universe appear in a 'Suggestions' box so newcomers can confirm the
+    right symbol, while any raw ticker (even one not in the list) still works.
     """
-    options = universe_df["Ticker"].tolist()
-    if default_ticker not in options:
-        options = [default_ticker] + options
-    options = options + ["__manual__"]
-
-    try:
-        default_index = options.index(default_ticker)
-    except ValueError:
-        default_index = 0
-
-    selection = st.sidebar.selectbox(
+    st.sidebar.markdown(f"**{label}**")
+    query = st.sidebar.text_input(
         label,
+        value=default_ticker,
+        key=f"{key_prefix}_query",
+        placeholder="e.g. apple, AAPL, NVDA, S&P 500",
+        help="Type a company/ETF name or a ticker symbol. Pick a suggestion below if you're unsure.",
+        label_visibility="collapsed",
+    ).strip()
+
+    if not query:
+        return default_ticker
+
+    raw = query.upper()
+    matches = search_universe(universe_df, query)
+
+    # Build options: a 'use exactly what I typed' passthrough plus matched tickers.
+    sentinel = f"__use__:{raw}"
+    options = [sentinel] + [t for t in matches["Ticker"].tolist() if t != raw]
+
+    # No suggestions to add -> pure free-text path.
+    if len(options) == 1:
+        return raw
+
+    raw_is_known = not universe_df.loc[universe_df["Ticker"] == raw].empty
+
+    def fmt(opt):
+        if opt == sentinel:
+            known = _format_picker_option(raw, universe_df)
+            return f"✓ {known}" if known != raw else f"✓ Use as typed: {raw}"
+        return _format_picker_option(opt, universe_df)
+
+    # If the user typed a real name (raw isn't a valid ticker), default to the
+    # best match so 'apple' lands on AAPL. If they typed a known ticker, keep it.
+    default_index = 0 if raw_is_known else 1
+
+    choice = st.sidebar.selectbox(
+        "Suggestions",
         options=options,
         index=default_index,
-        key=f"{key_prefix}_select",
-        format_func=lambda t: _format_picker_option(t, universe_df),
-        help="Start typing a company name or ticker to search.",
+        key=f"{key_prefix}_match_{raw}",
+        format_func=fmt,
+        label_visibility="collapsed",
     )
-
-    if selection == "__manual__":
-        return st.sidebar.text_input(
-            f"{label} (custom ticker)",
-            value=default_ticker,
-            key=f"{key_prefix}_manual",
-            help="Enter any Yahoo Finance ticker, e.g. NVDA, COIN, BRK-B.",
-        ).strip().upper()
-
-    return selection
+    return raw if choice == sentinel else choice
 
 
 @st.cache_data(ttl=24*3600)
@@ -194,8 +250,8 @@ def calculate_yearly_performance(data):
     if data is None or data.empty or 'Close' not in data.columns:
         return pd.Series(dtype=float)
 
-    yearly_open = data['Close'].resample('Y').first()
-    yearly_close = data['Close'].resample('Y').last()
+    yearly_open = data['Close'].resample(_YEAR_END_FREQ).first()
+    yearly_close = data['Close'].resample(_YEAR_END_FREQ).last()
 
     # Calculate the percentage difference between the first and last closing prices of each year
     yearly_returns = ((yearly_close - yearly_open) / yearly_open) * 100
@@ -573,7 +629,11 @@ def display_news(ticker):
 
 def main():
     universe = load_ticker_universe()
-    st.sidebar.caption(f"Searchable universe: {len(universe):,} stocks & ETFs")
+    st.sidebar.header("Pick two to compare")
+    st.sidebar.caption(
+        f"Type a company name or a ticker — we'll suggest matches from "
+        f"{len(universe):,} stocks & ETFs. Any other ticker works too."
+    )
 
     ticker1 = ticker_picker("First ticker", "AAPL", "ticker1", universe)
     ticker2 = ticker_picker("Second ticker", "MSFT", "ticker2", universe)
