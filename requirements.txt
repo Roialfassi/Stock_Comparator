@@ -1,6 +1,5 @@
-streamlit
-yfinance
-pandas
-matplotlib
-datetime
-plotly
+streamlit>=1.40
+yfinance>=1.2
+pandas>=2.0,<2.1
+matplotlib>=3.7
+plotly>=6.0

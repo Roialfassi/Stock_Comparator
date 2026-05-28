@@ -19,13 +19,13 @@ STOCK2_COLOR = "#ffae21"
 DEFAULT_INVESTMENT = 100
 
 
-# Exception handling function
 def handle_exceptions(func):
+    """Surface errors in the UI instead of silently swallowing them."""
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            # st.error(f"An error occurred: {e}")
+            st.warning(f"{func.__name__} failed: {type(e).__name__}: {e}")
             return None
 
     return wrapper
@@ -63,9 +63,17 @@ def fetch_stock_news(ticker):
 
 @handle_exceptions
 def get_stock_data(ticker, start_date):
+<<<<<<< Updated upstream
     data = fetch_stock_history(ticker, start_date)
     if data is not None:
         data['Year'] = data.index.year
+=======
+    stock = yf.Ticker(ticker)
+    data = stock.history(start=start_date)
+    if data.empty:
+        return data
+    data['Year'] = data.index.year
+>>>>>>> Stashed changes
     return data
 
 
@@ -91,7 +99,6 @@ def adjust_start_date_to_stock_data(start_date, data):
     return adjusted_start_date.date()
 
 
-@handle_exceptions
 def calculate_yearly_performance(data):
     """
     Calculate the yearly percentage change in closing prices
@@ -100,13 +107,11 @@ def calculate_yearly_performance(data):
     :param data: DataFrame containing stock prices with a 'Close' column.
     :return: Series with yearly percentage returns.
     """
-    # Ensure the 'Close' column exists
-    if 'Close' not in data.columns:
-        raise ValueError("DataFrame must contain 'Close' column")
+    if data is None or data.empty or 'Close' not in data.columns:
+        return pd.Series(dtype=float)
 
-    # Resample to get the first and last closing prices of each year
-    yearly_open = data['Close'].resample('Y').first()  # First closing price of each year
-    yearly_close = data['Close'].resample('Y').last()  # Last closing price of each year
+    yearly_open = data['Close'].resample('Y').first()
+    yearly_close = data['Close'].resample('Y').last()
 
     # Calculate the percentage difference between the first and last closing prices of each year
     yearly_returns = ((yearly_close - yearly_open) / yearly_open) * 100
@@ -173,9 +178,9 @@ def display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2):
     st.subheader(f"Stock Price History Normalized: {ticker1} vs {ticker2}")
 
     # Normalize the stock prices to start at the same value
-    start_price = min(data1['Close'][0], data2['Close'][0])
-    data1['Normalized_Price'] = data1['Close'] / data1['Close'][0] * start_price
-    data2['Normalized_Price'] = data2['Close'] / data2['Close'][0] * start_price
+    start_price = min(data1['Close'].iloc[0], data2['Close'].iloc[0])
+    data1['Normalized_Price'] = data1['Close'] / data1['Close'].iloc[0] * start_price
+    data2['Normalized_Price'] = data2['Close'] / data2['Close'].iloc[0] * start_price
 
     # Create traces for each stock
     trace1 = go.Scatter(
@@ -225,8 +230,9 @@ def display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2):
 
 
 # Calculate investment growth
-@handle_exceptions
 def calculate_investment_growth(data, initial_investment=DEFAULT_INVESTMENT):
+    if data is None or data.empty:
+        return None
     initial_price = data['Close'].iloc[0]
     current_price = data['Close'].iloc[-1]
     return (current_price / initial_price) * initial_investment
@@ -284,6 +290,18 @@ def display_yearly_performance_comparison(performance1, performance2, ticker1, t
 
 def display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date):
     try:
+<<<<<<< Updated upstream
+=======
+        if performance1 is None or performance2 is None or performance1.empty or performance2.empty:
+            st.warning("Not enough yearly data to compare these tickers.")
+            return
+
+        # Align performances on years present in both
+        common_years = performance1.index.intersection(performance2.index)
+        performance1 = performance1.loc[common_years]
+        performance2 = performance2.loc[common_years]
+
+>>>>>>> Stashed changes
         # Scoreboard
         scores = (performance1 > performance2).astype(int).sum(), (performance2 > performance1).astype(int).sum()
 
@@ -343,6 +361,7 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         investment1 = calculate_investment_growth(data1)
         investment2 = calculate_investment_growth(data2)
         st.write("---")
+<<<<<<< Updated upstream
 
         st.subheader(f"Investment Growth (Initial: ${DEFAULT_INVESTMENT})")
         col1, col2 = st.columns(2)
@@ -351,6 +370,14 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         with col2:
             st.metric(label=f"{ticker2} Value Today", value=f"${investment2:.2f}", delta=f"{((investment2 - DEFAULT_INVESTMENT)/DEFAULT_INVESTMENT)*100:.2f}%")
 
+=======
+        if investment1 is not None:
+            st.markdown(
+                f"If you invested **100** dollars in **{ticker1}** at **{start_date}** , you would have **{investment1:.2f}** dollars today.")
+        if investment2 is not None:
+            st.markdown(
+                f"If you invested **100** dollars in **{ticker2}** at **{start_date}** , you would have  **{investment2:.2f}** dollars today.")
+>>>>>>> Stashed changes
         st.write("---")
 
         display_yearly_performance_comparison(performance1, performance2, ticker1, ticker2)
@@ -359,7 +386,36 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         st.error(f"Error displaying results: {e}")
 
 
+def _fmt_money(value):
+    if value is None:
+        return "N/A"
+    try:
+        return f"${value:,}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def _fmt_percent(value):
+    # yfinance 1.x returns dividendYield already as a percent (e.g. 0.35 == 0.35%).
+    if value is None:
+        return "N/A"
+    try:
+        return f"{float(value):.2f}%"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def _fmt_number(value, prefix="", suffix=""):
+    if value is None:
+        return "N/A"
+    try:
+        return f"{prefix}{float(value):.2f}{suffix}"
+    except (TypeError, ValueError):
+        return f"{prefix}{value}{suffix}"
+
+
 @handle_exceptions
+<<<<<<< Updated upstream
 def display_side_by_side_info(ticker1, ticker2):
     st.subheader(f"General Information Comparison")
 
@@ -391,6 +447,20 @@ def display_side_by_side_info(ticker1, ticker2):
 
     display_info_in_col(col1, ticker1, info1)
     display_info_in_col(col2, ticker2, info2)
+=======
+def display_general_info(ticker):
+    stock = yf.Ticker(ticker)
+    info = stock.info
+    st.subheader(f"General Information for {ticker}")
+    st.write(f"**Company Name:** {info.get('longName') or 'N/A'}")
+    st.write(f"**Sector:** {info.get('sector') or 'N/A'}")
+    st.write(f"**Industry:** {info.get('industry') or 'N/A'}")
+    st.write(f"**Market Cap:** {_fmt_money(info.get('marketCap'))}")
+    st.write(f"**P/E Ratio:** {_fmt_number(info.get('forwardPE'))}")
+    st.write(f"**Dividend Yield:** {_fmt_percent(info.get('dividendYield'))}")
+    st.write(f"**52-Week High:** {_fmt_number(info.get('fiftyTwoWeekHigh'), prefix='$')}")
+    st.write(f"**52-Week Low:** {_fmt_number(info.get('fiftyTwoWeekLow'), prefix='$')}")
+>>>>>>> Stashed changes
 
 
 def get_name(ticker):
@@ -403,14 +473,53 @@ def get_name(ticker):
         return ticker
 
 
+def _extract_news_item(article):
+    """Normalize news items across old (flat) and new (nested under 'content') yfinance shapes."""
+    if not isinstance(article, dict):
+        return None, None
+    content = article.get('content', article)
+    title = content.get('title') or article.get('title')
+    link = None
+    for key in ('canonicalUrl', 'clickThroughUrl'):
+        val = content.get(key)
+        if isinstance(val, dict) and val.get('url'):
+            link = val['url']
+            break
+        if isinstance(val, str):
+            link = val
+            break
+    link = link or article.get('link')
+    return title, link
+
+
 @handle_exceptions
 def display_news(ticker):
+<<<<<<< Updated upstream
     news = fetch_stock_news(ticker)
     if news:
         with st.expander(f"Recent News for {ticker}"):
             for article in news[:5]:
                 st.write(f"**{article['title']}**")
                 st.write(f"[Read more]({article['link']})")
+=======
+    stock = yf.Ticker(ticker)
+    news = stock.news or []
+    st.subheader(f"Recent News for {ticker}")
+    if not news:
+        st.write("_No recent news available._")
+        return
+    shown = 0
+    for article in news:
+        title, link = _extract_news_item(article)
+        if not title:
+            continue
+        st.write(f"**{title}**")
+        if link:
+            st.write(f"[Read more]({link})")
+        shown += 1
+        if shown >= 5:
+            break
+>>>>>>> Stashed changes
 
 
 def main():
@@ -429,13 +538,27 @@ def main():
         st.write("Compare the performance of two stock tickers over the last 10 years.")
 
     if compare:
-        # st.write("---")
         data1 = get_stock_data(ticker1, start_date)
         data2 = get_stock_data(ticker2, start_date)
         name1 = get_name(ticker1)
         name2 = get_name(ticker2)
         st.subheader(f"Comparing {name1} vs {name2}")
+<<<<<<< Updated upstream
         if data1 is not None and not data1.empty and data2 is not None and not data2.empty:
+=======
+
+        missing = []
+        if data1 is None or data1.empty:
+            missing.append(ticker1)
+        if data2 is None or data2.empty:
+            missing.append(ticker2)
+        if missing:
+            st.error(f"Could not fetch price history for: {', '.join(missing)}. "
+                     f"Check the ticker symbol(s) and try again.")
+            return
+
+        if not data1.empty and not data2.empty:
+>>>>>>> Stashed changes
             performance1 = calculate_yearly_performance(data1)
             performance2 = calculate_yearly_performance(data2)
 
