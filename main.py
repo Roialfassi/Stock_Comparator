@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import yfinance as yf
 import pandas as pd
@@ -42,6 +43,96 @@ def retry_request(func):
                     raise e
                 time.sleep(2 ** i)
     return wrapper
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+@st.cache_data
+def load_ticker_universe():
+    """
+    Build a deduped, searchable list of tickers from the local CSVs.
+    Returns a DataFrame with columns: Ticker, Name, Category.
+    """
+    frames = []
+    for path, category in [
+        (os.path.join(_HERE, "Stocks.csv"), "Stock"),
+        (os.path.join(_HERE, "ETFs.csv"), "ETF"),
+    ]:
+        if not os.path.exists(path):
+            continue
+        try:
+            df = pd.read_csv(path)
+        except Exception:
+            continue
+        if "Ticker" not in df.columns or "Stock Name" not in df.columns:
+            continue
+        df = df[["Ticker", "Stock Name"]].rename(columns={"Stock Name": "Name"})
+        df["Category"] = category
+        frames.append(df)
+
+    if not frames:
+        return pd.DataFrame(columns=["Ticker", "Name", "Category"])
+
+    universe = pd.concat(frames, ignore_index=True)
+    universe = universe.dropna(subset=["Ticker", "Name"])
+    universe["Ticker"] = universe["Ticker"].astype(str).str.strip().str.upper()
+    universe["Name"] = universe["Name"].astype(str).str.strip()
+    # Drop the literal header row that snuck into a CSV
+    universe = universe[universe["Ticker"] != "TICKER"]
+    # Prefer ETF tag where the same ticker appears in both files (SPY, QQQ, ...).
+    # "ETF" sorts before "Stock", so ascending=True puts ETF first.
+    universe = universe.sort_values(["Ticker", "Category"], ascending=[True, True])
+    universe = universe.drop_duplicates(subset=["Ticker"], keep="first")
+    universe = universe.sort_values("Name", key=lambda s: s.str.lower()).reset_index(drop=True)
+    return universe
+
+
+def _format_picker_option(ticker, universe_df):
+    """Render a dropdown option like 'AAPL — Apple Inc. (Stock)'."""
+    if ticker == "__manual__":
+        return "Type a ticker manually..."
+    row = universe_df.loc[universe_df["Ticker"] == ticker]
+    if row.empty:
+        return ticker
+    name = row.iloc[0]["Name"]
+    category = row.iloc[0]["Category"]
+    return f"{ticker} — {name} ({category})"
+
+
+def ticker_picker(label, default_ticker, key_prefix, universe_df):
+    """
+    Searchable picker that defaults to a known ticker but lets users
+    fall back to a manual text input for tickers not in the universe.
+    """
+    options = universe_df["Ticker"].tolist()
+    if default_ticker not in options:
+        options = [default_ticker] + options
+    options = options + ["__manual__"]
+
+    try:
+        default_index = options.index(default_ticker)
+    except ValueError:
+        default_index = 0
+
+    selection = st.sidebar.selectbox(
+        label,
+        options=options,
+        index=default_index,
+        key=f"{key_prefix}_select",
+        format_func=lambda t: _format_picker_option(t, universe_df),
+        help="Start typing a company name or ticker to search.",
+    )
+
+    if selection == "__manual__":
+        return st.sidebar.text_input(
+            f"{label} (custom ticker)",
+            value=default_ticker,
+            key=f"{key_prefix}_manual",
+            help="Enter any Yahoo Finance ticker, e.g. NVDA, COIN, BRK-B.",
+        ).strip().upper()
+
+    return selection
+
 
 @st.cache_data(ttl=24*3600)
 @retry_request
@@ -481,10 +572,12 @@ def display_news(ticker):
 
 
 def main():
-    ticker1 = st.sidebar.text_input("Enter the first ticker", "AAPL",
-                                    help="Input the ticker symbol of the first stock/ETF.")
-    ticker2 = st.sidebar.text_input("Enter the second ticker", "MSFT",
-                                    help="Input the ticker symbol of the second stock/ETF.")
+    universe = load_ticker_universe()
+    st.sidebar.caption(f"Searchable universe: {len(universe):,} stocks & ETFs")
+
+    ticker1 = ticker_picker("First ticker", "AAPL", "ticker1", universe)
+    ticker2 = ticker_picker("Second ticker", "MSFT", "ticker2", universe)
+
     start_date = st.sidebar.date_input("Start Date", pd.to_datetime("2015-01-01"),
                                        help="Choose the starting date for comparison.")
 

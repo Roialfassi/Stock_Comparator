@@ -1,0 +1,340 @@
+Ticker,Stock Name
+SPY,SPDR S&P 500 ETF Trust
+IVV,iShares Core S&P 500 ETF
+VOO,Vanguard S&P 500 ETF
+VTI,Vanguard Total Stock Market ETF
+QQQ,Invesco QQQ Trust
+IWM,iShares Russell 2000 ETF
+DIA,SPDR Dow Jones Industrial Average ETF Trust
+GLD,SPDR Gold Shares ETF
+SLV,iShares Silver Trust
+TLT,iShares 20+ Year Treasury Bond ETF
+USO,United States Oil Fund LP
+VUG,Vanguard Growth ETF
+VTV,Vanguard Value ETF
+XLF,Financial Select Sector SPDR Fund
+XLK,Technology Select Sector SPDR Fund
+XLE,Energy Select Sector SPDR Fund
+XLV,Health Care Select Sector SPDR Fund
+XLI,Industrial Select Sector SPDR Fund
+XLP,Consumer Staples Select Sector SPDR Fund
+XLY,Consumer Discretionary Select Sector SPDR Fund
+XLC,Communication Services Select Sector SPDR Fund
+XLU,Utilities Select Sector SPDR Fund
+XLRE,Real Estate Select Sector SPDR Fund
+LQD,iShares iBoxx $ Investment Grade Corporate Bond ETF
+HYG,iShares iBoxx $ High Yield Corporate Bond ETF
+TIP,iShares TIPS Bond ETF
+SHY,iShares 1-3 Year Treasury Bond ETF
+AGG,iShares Core U.S. Aggregate Bond ETF
+IYR,iShares U.S. Real Estate ETF
+ARKK,ARK Innovation ETF
+ARKG,ARK Genomic Revolution ETF
+ARKF,ARK Fintech Innovation ETF
+REMX,Vaneck Rare Earth/Strategic Metals ETF
+PBW,Invesco WilderHill Clean Energy ETF
+TAN,Invesco Solar ETF
+ICLN,iShares Global Clean Energy ETF
+XBI,SPDR S&P Biotech ETF
+IBB,iShares Nasdaq Biotechnology ETF
+VDE,Vanguard Energy ETF
+XME,SPDR S&P Metals & Mining ETF
+SOXX,iShares Semiconductor ETF
+SMH,Vaneck Vectors Semiconductor ETF
+MOO,Vaneck Vectors Agribusiness ETF
+FDN,First Trust Dow Jones Internet Index Fund
+HACK,ETFMG Prime Cyber Security ETF
+BOTZ,Global X Robotics & Artificial Intelligence ETF
+ROBO,ROBO Global Robotics & Automation Index ETF
+FTEC,Fidelity MSCI Information Technology Index ETF
+XLV,Health Care Select Sector SPDR Fund
+IHI,iShares U.S. Medical Devices ETF
+IBB,iShares Nasdaq Biotechnology ETF
+XBI,SPDR S&P Biotech ETF
+FTEC,Fidelity MSCI Information Technology Index ETF
+VO,Vanguard Mid-Cap ETF
+VB,Vanguard Small-Cap ETF
+VNQ,Vanguard Real Estate ETF
+VNQI,Vanguard Global ex-U.S. Real Estate ETF
+VYM,Vanguard High Dividend Yield ETF
+SCHD,Schwab U.S. Dividend Equity ETF
+VIG,Vanguard Dividend Appreciation ETF
+DVY,iShares Select Dividend ETF
+SPHD,Invesco S&P 500 High Dividend Low Volatility ETF
+JNK,SPDR Bloomberg Barclays High Yield Bond ETF
+BND,Vanguard Total Bond Market ETF
+BSV,Vanguard Short-Term Bond ETF
+VGIT,Vanguard Intermediate-Term Treasury ETF
+VCIT,Vanguard Intermediate-Term Corporate Bond ETF
+BNDX,Vanguard Total International Bond ETF
+EMB,iShares J.P. Morgan USD Emerging Markets Bond ETF
+IEF,iShares 7-10 Year Treasury Bond ETF
+GDX,VanEck Vectors Gold Miners ETF
+GDXJ,VanEck Vectors Junior Gold Miners ETF
+IAU,iShares Gold Trust
+OIH,VanEck Vectors Oil Services ETF
+KBE,SPDR S&P Bank ETF
+KRE,SPDR S&P Regional Banking ETF
+IAT,iShares U.S. Regional Banks ETF
+MUB,iShares National Muni Bond ETF
+PFF,iShares Preferred and Income Securities ETF
+REM,iShares Mortgage Real Estate ETF
+SRLN,SPDR Blackstone Senior Loan ETF
+SPHD,Invesco S&P 500 High Dividend Low Volatility ETF
+VCSH,Vanguard Short-Term Corporate Bond ETF
+VGSH,Vanguard Short-Term Treasury ETF
+MGK,Vanguard Mega Cap Growth ETF
+MTUM,iShares MSCI USA Momentum Factor ETF
+QUAL,iShares MSCI USA Quality Factor ETF
+VLUE,iShares MSCI USA Value Factor ETF
+SPLV,Invesco S&P 500 Low Volatility ETF
+SPMV,Invesco S&P 500 Minimum Variance ETF
+EFAV,iShares MSCI EAFE Minimum Volatility ETF
+EFA,iShares MSCI EAFE ETF
+VEA,Vanguard FTSE Developed Markets ETF
+VWO,Vanguard FTSE Emerging Markets ETF
+SCZ,iShares MSCI EAFE Small-Cap ETF
+VSS,Vanguard FTSE All-World ex-US Small-Cap ETF
+IEMG,iShares Core MSCI Emerging Markets ETF
+EMXC,iShares MSCI Emerging Markets ex China ETF
+FRDM,Alpha Architect Freedom 100 Emerging Markets ETF
+SCHB,Schwab U.S. Broad Market ETF
+SCHX,Schwab U.S. Large-Cap ETF
+SCHA,Schwab U.S. Small-Cap ETF
+SCHM,Schwab U.S. Mid-Cap ETF
+SCHV,Schwab U.S. Large-Cap Value ETF
+SCHG,Schwab U.S. Large-Cap Growth ETF
+FNDX,Schwab Fundamental U.S. Large Company Index ETF
+FNDA,Schwab Fundamental U.S. Small Company Index ETF
+FNDB,Schwab Fundamental U.S. Broad Market Index ETF
+FNDX,Schwab Fundamental U.S. Large Company Index ETF
+FNDF,Schwab Fundamental International Large Company Index ETF
+SCHF,Schwab International Equity ETF
+SCHE,Schwab Emerging Markets Equity ETF
+SCHC,Schwab International Small-Cap Equity ETF
+SCHF,Schwab International Equity ETF
+BIV,Vanguard Intermediate-Term Bond ETF
+BLV,Vanguard Long-Term Bond ETF
+VGSH,Vanguard Short-Term Treasury ETF
+VBK,Vanguard Small-Cap Growth ETF
+VBR,Vanguard Small-Cap Value ETF
+IWF,iShares Russell 1000 Growth ETF
+IWD,iShares Russell 1000 Value ETF
+VIG,Vanguard Dividend Appreciation ETF
+VTIP,Vanguard Short-Term Inflation-Protected Securities ETF
+VNQI,Vanguard Global ex-U.S. Real Estate ETF
+VPL,Vanguard FTSE Pacific ETF
+VGK,Vanguard FTSE Europe ETF
+VSS,Vanguard FTSE All-World ex-US Small-Cap ETF
+IXUS,iShares Core MSCI Total International Stock ETF
+ACWI,iShares MSCI ACWI ETF
+VYMI,Vanguard International High Dividend Yield ETF
+DWX,SPDR S&P International Dividend ETF
+HDV,iShares Core High Dividend ETF
+SPHD,Invesco S&P 500 High Dividend Low Volatility ETF
+GUNR,FlexShares Morningstar Global Upstream Natural Resources ETF
+PPA,Invesco Aerospace & Defense ETF
+VGT,Vanguard Information Technology ETF
+VOX,Vanguard Communication Services ETF
+VIGI,Vanguard International Dividend Appreciation ETF
+BIZD,VanEck Vectors BDC Income ETF
+FTSM,Federated Hermes Short-Term Municipal Income Fund
+Ticker,Name
+SPY,SPDR S&P 500 ETF Trust
+VOO,Vanguard S&P 500 ETF
+VTI,Vanguard Total Stock Market ETF
+QQQ,Invesco QQQ Trust
+IVV,iShares Core S&P 500 ETF
+VEA,Vanguard FTSE Developed Markets ETF
+IEFA,iShares Core MSCI EAFE ETF
+AGG,iShares Core U.S. Aggregate Bond ETF
+VWO,Vanguard FTSE Emerging Markets ETF
+BND,Vanguard Total Bond Market ETF
+VIG,Vanguard Dividend Appreciation ETF
+IJR,iShares Core S&P Small-Cap ETF
+VNQ,Vanguard Real Estate ETF
+VXUS,Vanguard Total International Stock ETF
+VEU,Vanguard FTSE All-World ex-US ETF
+DIA,SPDR Dow Jones Industrial Average ETF
+XLF,Financial Select Sector SPDR Fund
+XLE,Energy Select Sector SPDR Fund
+XLK,Technology Select Sector SPDR Fund
+XLV,Health Care Select Sector SPDR Fund
+VGT,Vanguard Information Technology ETF
+VHT,Vanguard Health Care ETF
+VFH,Vanguard Financials ETF
+VCR,Vanguard Consumer Discretionary ETF
+VDC,Vanguard Consumer Staples ETF
+VPU,Vanguard Utilities ETF
+VAW,Vanguard Materials ETF
+VIS,Vanguard Industrials ETF
+VDE,Vanguard Energy ETF
+EEM,iShares MSCI Emerging Markets ETF
+EFA,iShares MSCI EAFE ETF
+LQD,iShares iBoxx $ Investment Grade Corporate Bond ETF
+TLT,iShares 20+ Year Treasury Bond ETF
+GLD,SPDR Gold Shares
+SLV,iShares Silver Trust
+USO,United States Oil Fund
+UNG,United States Natural Gas Fund
+VYM,Vanguard High Dividend Yield ETF
+SCHD,Schwab U.S. Dividend Equity ETF
+HDV,iShares Core High Dividend ETF
+RSP,Invesco S&P 500 Equal Weight ETF
+SPLV,Invesco S&P 500 Low Volatility ETF
+USMV,iShares MSCI USA Min Vol Factor ETF
+MTUM,iShares MSCI USA Momentum Factor ETF
+QUAL,iShares MSCI USA Quality Factor ETF
+SIZE,iShares MSCI USA Size Factor ETF
+IWM,iShares Russell 2000 ETF
+MDY,SPDR S&P MidCap 400 ETF
+IJH,iShares Core S&P Mid-Cap ETF
+VB,Vanguard Small-Cap ETF
+VO,Vanguard Mid-Cap ETF
+VV,Vanguard Large-Cap ETF
+VUG,Vanguard Growth ETF
+VTV,Vanguard Value ETF
+IWF,iShares Russell 1000 Growth ETF
+IWD,iShares Russell 1000 Value ETF
+SCZ,iShares MSCI EAFE Small-Cap ETF
+VSS,Vanguard FTSE All-World ex-US Small-Cap ETF
+VGK,Vanguard FTSE Europe ETF
+EWJ,iShares MSCI Japan ETF
+MCHI,iShares MSCI China ETF
+EWZ,iShares MSCI Brazil ETF
+EWC,iShares MSCI Canada ETF
+EWA,iShares MSCI Australia ETF
+RSX,VanEck Russia ETF
+EPI,WisdomTree India Earnings Fund
+THD,iShares MSCI Thailand ETF
+ARKK,ARK Innovation ETF
+ARKG,ARK Genomic Revolution ETF
+ARKW,ARK Next Generation Internet ETF
+ARKF,ARK Fintech Innovation ETF
+ICLN,iShares Global Clean Energy ETF
+TAN,Invesco Solar ETF
+FAN,First Trust Global Wind Energy ETF
+PBW,Invesco WilderHill Clean Energy ETF
+ROBO,ROBO Global Robotics and Automation Index ETF
+BOTZ,Global X Robotics & Artificial Intelligence ETF
+SKYY,First Trust Cloud Computing ETF
+CIBR,First Trust NASDAQ Cybersecurity ETF
+SOCL,Global X Social Media ETF
+GAMR,Wedbush ETFMG Video Game Tech ETF
+FINX,Global X FinTech ETF
+IBUY,Amplify Online Retail ETF
+JETS,U.S. Global Jets ETF
+AWAY,ETFMG Travel Tech ETF
+REMX,VanEck Rare Earth/Strategic Metals ETF
+LIT,Global X Lithium & Battery Tech ETF
+COPX,Global X Copper Miners ETF
+SIL,Global X Silver Miners ETF
+GDXJ,VanEck Junior Gold Miners ETF
+XME,SPDR S&P Metals & Mining ETF
+KRE,SPDR S&P Regional Banking ETF
+XHB,SPDR S&P Homebuilders ETF
+ITB,iShares U.S. Home Construction ETF
+XRT,SPDR S&P Retail ETF
+XBI,SPDR S&P Biotech ETF
+IBB,iShares Nasdaq Biotechnology ETF
+IYR,iShares U.S. Real Estate ETF
+SCHH,Schwab U.S. REIT ETF
+IEMG,iShares Core MSCI Emerging Markets ETF
+VXF,Vanguard Extended Market ETF
+VTEB,Vanguard Tax-Exempt Bond ETF
+BNDX,Vanguard Total International Bond ETF
+MUB,iShares National Muni Bond ETF
+HYG,iShares iBoxx $ High Yield Corporate Bond ETF
+JNK,SPDR Bloomberg High Yield Bond ETF
+VCIT,Vanguard Intermediate-Term Corporate Bond ETF
+VCSH,Vanguard Short-Term Corporate Bond ETF
+SHY,iShares 1-3 Year Treasury Bond ETF
+IEF,iShares 7-10 Year Treasury Bond ETF
+GOVT,iShares U.S. Treasury Bond ETF
+VTIP,Vanguard Short-Term Inflation-Protected Securities ETF
+TIP,iShares TIPS Bond ETF
+PDBC,Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF
+DBC,Invesco DB Commodity Index Tracking Fund
+USCI,United States Commodity Index Fund
+GSG,iShares S&P GSCI Commodity-Indexed Trust
+SGOL,Aberdeen Standard Physical Gold Shares ETF
+PPLT,Aberdeen Standard Physical Platinum Shares ETF
+PALL,Aberdeen Standard Physical Palladium Shares ETF
+URA,Global X Uranium ETF
+CORN,Teucrium Corn Fund
+WEAT,Teucrium Wheat Fund
+SOYB,Teucrium Soybean Fund
+COW,iPath Bloomberg Livestock Subindex Total Return ETN
+FXI,iShares China Large-Cap ETF
+KWEB,KraneShares CSI China Internet ETF
+ASHR,Xtrackers Harvest CSI 300 China A-Shares ETF
+EWY,iShares MSCI South Korea ETF
+EWT,iShares MSCI Taiwan ETF
+EWS,iShares MSCI Singapore ETF
+EWM,iShares MSCI Malaysia ETF
+THD,iShares MSCI Thailand ETF
+EPHE,iShares MSCI Philippines ETF
+EWW,iShares MSCI Mexico ETF
+ECH,iShares MSCI Chile ETF
+EPOL,iShares MSCI Poland ETF
+TUR,iShares MSCI Turkey ETF
+ERUS,iShares MSCI Russia ETF
+EZA,iShares MSCI South Africa ETF
+NGE,Global X MSCI Nigeria ETF
+AFK,VanEck Africa Index ETF
+EGPT,VanEck Egypt Index ETF
+VNM,VanEck Vietnam ETF
+GREK,Global X MSCI Greece ETF
+EFAV,iShares Edge MSCI Min Vol EAFE ETF
+ACWI,iShares MSCI ACWI ETF
+ACWX,iShares MSCI ACWI ex U.S. ETF
+CWI,SPDR MSCI ACWI ex-US ETF
+DWX,SPDR S&P International Dividend ETF
+DGRO,iShares Core Dividend Growth ETF
+NOBL,ProShares S&P 500 Dividend Aristocrats ETF
+SDY,SPDR S&P Dividend ETF
+DVY,iShares Select Dividend ETF
+FVD,First Trust Value Line Dividend Index Fund
+FDL,First Trust Morningstar Dividend Leaders Index Fund
+SPHD,Invesco S&P 500 High Dividend Low Volatility ETF
+SPYD,SPDR Portfolio S&P 500 High Dividend ETF
+PFF,iShares Preferred and Income Securities ETF
+PFXF,VanEck Vectors Preferred Securities ex Financials ETF
+SRLN,SPDR Blackstone Senior Loan ETF
+BKLN,Invesco Senior Loan ETF
+FLOT,iShares Floating Rate Bond ETF
+VMBS,Vanguard Mortgage-Backed Securities ETF
+MBB,iShares MBS ETF
+CMBS,iShares CMBS ETF
+IGIB,iShares Intermediate-Term Corporate Bond ETF
+IGSB,iShares Short-Term Corporate Bond ETF
+USIG,iShares Broad USD Investment Grade Corporate Bond ETF
+SPIB,SPDR Portfolio Intermediate Term Corporate Bond ETF
+SPSB,SPDR Portfolio Short Term Corporate Bond ETF
+JPST,JPMorgan Ultra-Short Income ETF
+GSY,Invesco Ultra Short Duration ETF
+MINT,PIMCO Enhanced Short Maturity Active ETF
+SHV,iShares Short Treasury Bond ETF
+BIL,SPDR Bloomberg 1-3 Month T-Bill ETF
+USFR,WisdomTree Floating Rate Treasury Fund
+TFLO,iShares Treasury Floating Rate Bond ETF
+ICSH,iShares Ultra Short-Term Bond ETF
+NEAR,iShares Short Maturity Bond ETF
+VGSH,Vanguard Short-Term Treasury ETF
+VGIT,Vanguard Intermediate-Term Treasury ETF
+VGLT,Vanguard Long-Term Treasury ETF
+SCHO,Schwab Short-Term U.S. Treasury ETF
+SCHR,Schwab Intermediate-Term U.S. Treasury ETF
+SPTS,SPDR Portfolio Short Term Treasury ETF
+SPTI,SPDR Portfolio Intermediate Term Treasury ETF
+SPTL,SPDR Portfolio Long Term Treasury ETF
+IEI,iShares 3-7 Year Treasury Bond ETF
+VWOB,Vanguard Emerging Markets Government Bond ETF
+EMB,iShares J.P. Morgan USD Emerging Markets Bond ETF
+PCY,Invesco Emerging Markets Sovereign Debt ETF
+EMLC,VanEck J.P. Morgan EM Local Currency Bond ETF
+IAGG,iShares Core International Aggregate Bond ETF
+BWX,SPDR Bloomberg Barclays International Treasury Bond ETF
+WIP,SPDR FTSE International Government Inflation-Protected Bond ETF
+IGOV,iShares International Treasury Bond ETF
+LEMB,iShares J.P. Morgan EM Local Currency Bond ETF

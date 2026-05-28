@@ -2,4 +2,6 @@
 /venv
 /.idea
 *.csv
+!Stocks.csv
+!ETFs.csv
 /__pycache__
