@@ -1,4 +1,5 @@
 import os
+import inspect
 import streamlit as st
 import yfinance as yf
 import pandas as pd
@@ -26,6 +27,13 @@ st.set_page_config(
 STOCK1_COLOR = "blue"
 STOCK2_COLOR = "#ffae21"
 DEFAULT_INVESTMENT = 100
+
+
+def display_plotly_chart(fig):
+    if "width" in inspect.signature(st.plotly_chart).parameters:
+        st.plotly_chart(fig, width="stretch")
+    else:
+        st.plotly_chart(fig, use_container_width=True)
 
 
 def handle_exceptions(func):
@@ -310,7 +318,7 @@ def display_stock_prices_chart(data1, data2, ticker1, ticker2):
     fig = go.Figure(data=[trace1, trace2], layout=layout)
 
     # Display the interactive chart
-    st.plotly_chart(fig, use_container_width=True)
+    display_plotly_chart(fig)
 
 
 @handle_exceptions
@@ -366,7 +374,7 @@ def display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2):
     fig = go.Figure(data=[trace1, trace2], layout=layout)
 
     # Display the interactive chart
-    st.plotly_chart(fig, use_container_width=True)
+    display_plotly_chart(fig)
 
 
 # Calculate investment growth
@@ -425,7 +433,7 @@ def display_yearly_performance_comparison(performance1, performance2, ticker1, t
     fig = go.Figure(data=[trace1, trace2], layout=layout)
 
     # Display the interactive chart
-    st.plotly_chart(fig, use_container_width=True)
+    display_plotly_chart(fig)
 
 
 def display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date):
@@ -469,10 +477,17 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
                 return f'background-color: {STOCK1_COLOR}; color: white' if val == ticker1 else f'background-color: {STOCK2_COLOR}; color: white'
             return ''
 
-        styled_df = comparison_df.style.applymap(lambda val: colorize(val, ticker1), subset=[ticker1]) \
-            .applymap(lambda val: colorize(val, ticker2), subset=[ticker2]) \
-            .applymap(lambda val: colorize(val, 'Winner'), subset=['Winner']) \
-            .set_table_styles({
+        def style_cells(styler, func, subset):
+            # Styler.applymap was removed in newer pandas; Styler.map is the replacement.
+            if hasattr(styler, 'map'):
+                return styler.map(func, subset=subset)
+            return styler.applymap(func, subset=subset)
+
+        styled_df = comparison_df.style
+        styled_df = style_cells(styled_df, lambda val: colorize(val, ticker1), subset=[ticker1])
+        styled_df = style_cells(styled_df, lambda val: colorize(val, ticker2), subset=[ticker2])
+        styled_df = style_cells(styled_df, lambda val: colorize(val, 'Winner'), subset=['Winner'])
+        styled_df = styled_df.set_table_styles({
             ticker1: [{'selector': 'th', 'props': [('background-color', 'yellow'), ('color', 'black')]}],
             ticker2: [{'selector': 'th', 'props': [('background-color', 'lightblue'), ('color', 'black')]}],
             'Winner': [{'selector': 'th', 'props': [('background-color', 'gray'), ('color', 'white')]}],
