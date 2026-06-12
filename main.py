@@ -377,13 +377,73 @@ def display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2):
     display_plotly_chart(fig)
 
 
+def _close_history(data):
+    if data is None or data.empty or 'Close' not in data.columns:
+        return pd.DataFrame(columns=['Close'])
+
+    history = data[['Close']].dropna().copy().sort_index()
+    if history.empty:
+        return history
+
+    index = pd.DatetimeIndex(history.index)
+    if index.tz is not None:
+        index = index.tz_localize(None)
+    history.index = index
+    return history
+
+
+def get_shared_price_histories(data1, data2):
+    history1 = _close_history(data1)
+    history2 = _close_history(data2)
+    if history1.empty or history2.empty:
+        return history1.iloc[0:0], history2.iloc[0:0], None, None
+
+    start = max(history1.index.min(), history2.index.min())
+    end = min(history1.index.max(), history2.index.max())
+    if start > end:
+        return history1.iloc[0:0], history2.iloc[0:0], None, None
+
+    aligned1 = history1.loc[(history1.index >= start) & (history1.index <= end)]
+    aligned2 = history2.loc[(history2.index >= start) & (history2.index <= end)]
+    if aligned1.empty or aligned2.empty:
+        return aligned1.iloc[0:0], aligned2.iloc[0:0], None, None
+
+    actual_start = max(aligned1.index.min(), aligned2.index.min())
+    actual_end = min(aligned1.index.max(), aligned2.index.max())
+    return aligned1, aligned2, actual_start, actual_end
+
+
 # Calculate investment growth
 def calculate_investment_growth(data, initial_investment=DEFAULT_INVESTMENT):
-    if data is None or data.empty:
+    history = _close_history(data)
+    if history.empty:
         return None
-    initial_price = data['Close'].iloc[0]
-    current_price = data['Close'].iloc[-1]
+    initial_price = history['Close'].iloc[0]
+    current_price = history['Close'].iloc[-1]
+    if initial_price <= 0:
+        return None
     return (current_price / initial_price) * initial_investment
+
+
+def calculate_average_annual_return(data):
+    """
+    Calculate the annualized average return (CAGR) over the full data period.
+    This answers what constant yearly return turns the initial value into the final value.
+    """
+    history = _close_history(data)
+    if len(history) < 2:
+        return None
+
+    initial_price = history['Close'].iloc[0]
+    final_price = history['Close'].iloc[-1]
+    if initial_price <= 0 or final_price <= 0:
+        return None
+
+    years = (history.index[-1] - history.index[0]).days / 365.25
+    if years <= 0:
+        return None
+
+    return ((final_price / initial_price) ** (1 / years) - 1) * 100
 
 
 @handle_exceptions
@@ -509,25 +569,43 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2)
         display_stock_prices_chart(data1, data2, ticker1, ticker2)
 
-        # Calculate and display investment growth
-        investment1 = calculate_investment_growth(data1)
-        investment2 = calculate_investment_growth(data2)
+        # Calculate and display investment growth over the shared comparison window.
+        shared_data1, shared_data2, period_start, period_end = get_shared_price_histories(data1, data2)
+        investment1 = calculate_investment_growth(shared_data1)
+        investment2 = calculate_investment_growth(shared_data2)
+        average_return1 = calculate_average_annual_return(shared_data1)
+        average_return2 = calculate_average_annual_return(shared_data2)
         st.write("---")
 
         st.subheader(f"Investment Growth (Initial: ${DEFAULT_INVESTMENT})")
+        if period_start is not None and period_end is not None:
+            st.caption(
+                f"Shared comparison period: {period_start:%b %d, %Y} to {period_end:%b %d, %Y}. "
+                "Average return per year is annualized (CAGR)."
+            )
         col1, col2 = st.columns(2)
         with col1:
+            st.markdown(f"**{ticker1}**")
             if investment1 is not None:
                 delta_pct1 = ((investment1 - DEFAULT_INVESTMENT) / DEFAULT_INVESTMENT) * 100
-                st.metric(label=f"{ticker1} Value Today", value=f"${investment1:.2f}", delta=f"{delta_pct1:.2f}%")
+                st.metric(label="Value at Period End", value=f"${investment1:.2f}", delta=f"{delta_pct1:.2f}% total")
             else:
-                st.metric(label=f"{ticker1} Value Today", value="N/A")
+                st.metric(label="Value at Period End", value="N/A")
+            st.metric(
+                label="Average Return / Year",
+                value=f"{average_return1:.2f}%" if average_return1 is not None else "N/A",
+            )
         with col2:
+            st.markdown(f"**{ticker2}**")
             if investment2 is not None:
                 delta_pct2 = ((investment2 - DEFAULT_INVESTMENT) / DEFAULT_INVESTMENT) * 100
-                st.metric(label=f"{ticker2} Value Today", value=f"${investment2:.2f}", delta=f"{delta_pct2:.2f}%")
+                st.metric(label="Value at Period End", value=f"${investment2:.2f}", delta=f"{delta_pct2:.2f}% total")
             else:
-                st.metric(label=f"{ticker2} Value Today", value="N/A")
+                st.metric(label="Value at Period End", value="N/A")
+            st.metric(
+                label="Average Return / Year",
+                value=f"{average_return2:.2f}%" if average_return2 is not None else "N/A",
+            )
 
         st.write("---")
 
