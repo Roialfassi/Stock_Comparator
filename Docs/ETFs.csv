@@ -1,169 +1,12 @@
 Ticker,Stock Name
-AAPL,Apple Inc.
-AA,Alcoa Corporation
-AFL,Aflac Incorporated
-AMD,Advanced Micro Devices Inc.
-AMZN,Amazon.com Inc.
-AN,AutoNation Inc.
-APA,Apache Corporation
-APD,Air Products and Chemicals Inc.
-AXP,American Express Company
-BA,Boeing Company
-BAC,Bank of America Corporation
-BB,BlackBerry Limited
-BBY,Best Buy Co. Inc.
-BHP,BHP Group Limited
-BLK,BlackRock Inc.
-BMY,Bristol-Myers Squibb Company
-BP,BP plc
-C,Citigroup Inc.
-CAT,Caterpillar Inc.
-COST,Costco Wholesale Corporation
-CSCO,Cisco Systems Inc.
-CVS,CVS Health Corporation
-CVX,Chevron Corporation
-D,Dominion Energy Inc.
-DAL,Delta Air Lines Inc.
-DB,Deutsche Bank AG
-DHR,Danaher Corporation
-DIS,The Walt Disney Company
-DLR,Digital Realty Trust Inc.
-DOCU,DocuSign Inc.
-DUK,Duke Energy Corporation
-E,Eni S.p.A.
-EBAY,eBay Inc.
-ED,Consolidated Edison Inc.
-EMR,Emerson Electric Co.
-ENB,Enbridge Inc.
-ET,Energy Transfer LP
-ETN,Eaton Corporation plc
-EXC,Exelon Corporation
-F,Ford Motor Company
-FB,Meta Platforms Inc.
-FDX,FedEx Corporation
-FE,FirstEnergy Corp.
-FMC,FMC Corporation
-FSLY,Fastly Inc.
-G,GigCapital2 Inc.
-GD,General Dynamics Corporation
-GE,General Electric Company
-GILD,Gilead Sciences Inc.
-GIS,General Mills Inc.
-GLD,SPDR Gold Shares ETF
-GM,General Motors Company
-GOOGL,Alphabet Inc.
-GS,The Goldman Sachs Group Inc.
-H,Hyatt Hotels Corporation
-HAL,Halliburton Company
-HD,The Home Depot Inc.
-HES,Hess Corporation
-HIG,The Hartford Financial Services Group Inc.
-HON,Honeywell International Inc.
-HP,Helmerich & Payne Inc.
-HRB,H&R Block Inc.
-HSY,Hershey Company
-I,Intelsat S.A.
-IBM,International Business Machines Corporation
-ICE,Intercontinental Exchange Inc.
-IEX,IDEX Corporation
-IFF,International Flavors & Fragrances Inc.
-INTC,Intel Corporation
-IP,International Paper Company
-ITW,Illinois Tool Works Inc.
-J,Jacobs Engineering Group Inc.
-JBL,Jabil Inc.
-JCI,Johnson Controls International plc
-JNJ,Johnson & Johnson
-JPM,JPMorgan Chase & Co.
-K,Kellogg Company
-KEY,KeyCorp
-KHC,Kraft Heinz Company
-KMB,Kimberly-Clark Corporation
-KO,The Coca-Cola Company
-KR,Kroger Co.
-L,Loews Corporation
-LHX,L3Harris Technologies Inc.
-LIN,Linde plc
-LLY,Eli Lilly and Company
-LMT,Lockheed Martin Corporation
-LOW,Lowe's Companies Inc.
-LUV,Southwest Airlines Co.
-M,Macy's Inc.
-MA,Mastercard Incorporated
-MCD,McDonald's Corporation
-MDT,Medtronic plc
-MET,MetLife Inc.
-MMM,3M Company
-MO,Altria Group Inc.
-MRK,Merck & Co. Inc.
-MS,Morgan Stanley
-MSFT,Microsoft Corporation
-MU,Micron Technology Inc.
-N,Nokia Corporation
-NCLH,Norwegian Cruise Line Holdings Ltd.
-NEE,NextEra Energy Inc.
-NFLX,Netflix Inc.
-NKE,Nike Inc.
-NOC,Northrop Grumman Corporation
-NTRS,Northern Trust Corporation
-O,Realty Income Corporation
-OXY,Occidental Petroleum Corporation
-P,Pandora Media Inc.
-PBR,Petróleo Brasileiro S.A. - Petrobras
-PEP,PepsiCo Inc.
-PFE,Pfizer Inc.
-PG,Procter & Gamble Co.
-PLD,Prologis Inc.
-PRU,Prudential Financial Inc.
-PSX,Phillips 66
-QCOM,Qualcomm Incorporated
-QQQ,Invesco QQQ Trust
-R,Ryder System Inc.
-RCL,Royal Caribbean Cruises Ltd.
-RE,Everest Re Group Ltd.
-REGN,Regeneron Pharmaceuticals Inc.
-ROK,Rockwell Automation Inc.
-ROST,Ross Stores Inc.
-S,Sprint Corporation
-SBUX,Starbucks Corporation
-SLB,Schlumberger Limited
-SO,The Southern Company
-SPG,Simon Property Group Inc.
 SPY,SPDR S&P 500 ETF Trust
-SQ,Square Inc.
-STT,State Street Corporation
-T,AT&T Inc.
-TGT,Target Corporation
-TJX,TJX Companies Inc.
-TSLA,Tesla Inc.
-TSN,Tyson Foods Inc.
-TWTR,Twitter Inc.
-TXN,Texas Instruments Incorporated
-U,Unity Software Inc.
-UAL,United Airlines Holdings Inc.
-UBER,Uber Technologies Inc.
-UNH,UnitedHealth Group Incorporated
-UPS,United Parcel Service Inc.
-V,Visa Inc.
-VZ,Verizon Communications Inc.
-W,Wayfair Inc.
-WBA,Walgreens Boots Alliance Inc.
-WFC,Wells Fargo & Company
-WMT,Walmart Inc.
-X,United States Steel Corporation
-XEL,Xcel Energy Inc.
-XOM,Exxon Mobil Corporation
-Y,Yahoo! Inc.
-YUM,Yum! Brands Inc.
-Z,Zillow Group Inc.
-ZBH,Zimmer Biomet Holdings Inc.
-ZM,Zoom Video Communications Inc.
-ZTS,Zoetis Inc.
 IVV,iShares Core S&P 500 ETF
 VOO,Vanguard S&P 500 ETF
 VTI,Vanguard Total Stock Market ETF
+QQQ,Invesco QQQ Trust
 IWM,iShares Russell 2000 ETF
 DIA,SPDR Dow Jones Industrial Average ETF Trust
+GLD,SPDR Gold Shares ETF
 SLV,iShares Silver Trust
 TLT,iShares 20+ Year Treasury Bond ETF
 USO,United States Oil Fund LP
@@ -284,12 +127,11 @@ VOX,Vanguard Communication Services ETF
 VIGI,Vanguard International Dividend Appreciation ETF
 BIZD,VanEck Vectors BDC Income ETF
 FTSM,Federated Hermes Short-Term Municipal Income Fund
-Ticker,Name
+TICKER,Name
 IEFA,iShares Core MSCI EAFE ETF
 IJR,iShares Core S&P Small-Cap ETF
 VXUS,Vanguard Total International Stock ETF
 VEU,Vanguard FTSE All-World ex-US ETF
-DIA,SPDR Dow Jones Industrial Average ETF
 VHT,Vanguard Health Care ETF
 VFH,Vanguard Financials ETF
 VCR,Vanguard Consumer Discretionary ETF
@@ -298,8 +140,6 @@ VPU,Vanguard Utilities ETF
 VAW,Vanguard Materials ETF
 VIS,Vanguard Industrials ETF
 EEM,iShares MSCI Emerging Markets ETF
-GLD,SPDR Gold Shares
-USO,United States Oil Fund
 UNG,United States Natural Gas Fund
 RSP,Invesco S&P 500 Equal Weight ETF
 USMV,iShares MSCI USA Min Vol Factor ETF
@@ -317,7 +157,6 @@ EPI,WisdomTree India Earnings Fund
 THD,iShares MSCI Thailand ETF
 ARKW,ARK Next Generation Internet ETF
 FAN,First Trust Global Wind Energy ETF
-ROBO,ROBO Global Robotics and Automation Index ETF
 SKYY,First Trust Cloud Computing ETF
 CIBR,First Trust NASDAQ Cybersecurity ETF
 SOCL,Global X Social Media ETF
@@ -326,18 +165,15 @@ FINX,Global X FinTech ETF
 IBUY,Amplify Online Retail ETF
 JETS,U.S. Global Jets ETF
 AWAY,ETFMG Travel Tech ETF
-REMX,VanEck Rare Earth/Strategic Metals ETF
 LIT,Global X Lithium & Battery Tech ETF
 COPX,Global X Copper Miners ETF
 SIL,Global X Silver Miners ETF
-GDXJ,VanEck Junior Gold Miners ETF
 XHB,SPDR S&P Homebuilders ETF
 ITB,iShares U.S. Home Construction ETF
 XRT,SPDR S&P Retail ETF
 SCHH,Schwab U.S. REIT ETF
 VXF,Vanguard Extended Market ETF
 VTEB,Vanguard Tax-Exempt Bond ETF
-JNK,SPDR Bloomberg High Yield Bond ETF
 GOVT,iShares U.S. Treasury Bond ETF
 PDBC,Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF
 DBC,Invesco DB Commodity Index Tracking Fund
@@ -370,7 +206,6 @@ AFK,VanEck Africa Index ETF
 EGPT,VanEck Egypt Index ETF
 VNM,VanEck Vietnam ETF
 GREK,Global X MSCI Greece ETF
-EFAV,iShares Edge MSCI Min Vol EAFE ETF
 ACWX,iShares MSCI ACWI ex U.S. ETF
 CWI,SPDR MSCI ACWI ex-US ETF
 DGRO,iShares Core Dividend Growth ETF

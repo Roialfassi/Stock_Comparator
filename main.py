@@ -1,9 +1,9 @@
+import functools
 import os
 import inspect
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import time
 
@@ -38,6 +38,7 @@ def display_plotly_chart(fig):
 
 def handle_exceptions(func):
     """Surface errors in the UI instead of silently swallowing them."""
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -49,6 +50,10 @@ def handle_exceptions(func):
 
 def retry_request(func):
     """Decorator to retry a function call with exponential backoff."""
+    # functools.wraps is required here: st.cache_data keys on the wrapped
+    # function's qualname/source, so bare wrappers make every @retry_request
+    # function share one cache (fetch_stock_info/fetch_stock_news collide).
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         max_retries = 3
         for i in range(max_retries):
@@ -63,6 +68,15 @@ def retry_request(func):
 _HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+def _find_data_file(filename):
+    """Locate a data CSV; they have lived both at the repo root and under Docs/."""
+    for directory in (_HERE, os.path.join(_HERE, "Docs")):
+        path = os.path.join(directory, filename)
+        if os.path.exists(path):
+            return path
+    return None
+
+
 @st.cache_data
 def load_ticker_universe():
     """
@@ -70,11 +84,12 @@ def load_ticker_universe():
     Returns a DataFrame with columns: Ticker, Name, Category.
     """
     frames = []
-    for path, category in [
-        (os.path.join(_HERE, "Stocks.csv"), "Stock"),
-        (os.path.join(_HERE, "ETFs.csv"), "ETF"),
+    for filename, category in [
+        ("Stocks.csv", "Stock"),
+        ("ETFs.csv", "ETF"),
     ]:
-        if not os.path.exists(path):
+        path = _find_data_file(filename)
+        if path is None:
             continue
         try:
             df = pd.read_csv(path)
@@ -218,56 +233,44 @@ def fetch_stock_news(ticker):
 
 @handle_exceptions
 def get_stock_data(ticker, start_date):
-    data = fetch_stock_history(ticker, start_date)
-    if data is None or data.empty:
-        return data
-    data['Year'] = data.index.year
-    return data
+    return fetch_stock_history(ticker, start_date)
 
 
-def adjust_start_date_to_stock_data(start_date, data):
-    """
-    Compare the input start date with the first available date in the stock data.
-    Return the later date in the format of date_input (datetime.date).
+def _close_history(data):
+    if data is None or data.empty or 'Close' not in data.columns:
+        return pd.DataFrame(columns=['Close'])
 
-    :param start_date: datetime.date - The desired start date for comparison.
-    :param data: pd.DataFrame - The stock data with a datetime index.
-    :return: datetime.date - The adjusted start date.
-    """
-    # Ensure start_date is a pd.Timestamp for compatibility
-    start_date = pd.Timestamp(start_date)
+    history = data[['Close']].dropna().copy().sort_index()
+    if history.empty:
+        return history
 
-    # Get the first available date in the DataFrame
-    first_date_in_data = data.index.min()
-
-    # Compare the dates and get the later one
-    adjusted_start_date = max(start_date, first_date_in_data)
-
-    # Return the adjusted date in the format of date_input (datetime.date)
-    return adjusted_start_date.date()
+    index = pd.DatetimeIndex(history.index)
+    if index.tz is not None:
+        index = index.tz_localize(None)
+    history.index = index
+    return history
 
 
 def calculate_yearly_performance(data):
     """
-    Calculate the yearly percentage change in closing prices
-    from the first trading day to the last trading day of each year.
+    Calculate the yearly percentage change in closing prices. Each year's
+    return is measured against the previous year's last close, so the
+    year-boundary move is counted; the first (possibly partial) year is
+    measured from its first available close instead.
 
     :param data: DataFrame containing stock prices with a 'Close' column.
-    :return: Series with yearly percentage returns.
+    :return: Series with yearly percentage returns, indexed by (tz-naive) year end.
     """
-    if data is None or data.empty or 'Close' not in data.columns:
+    history = _close_history(data)
+    if history.empty:
         return pd.Series(dtype=float)
 
-    yearly_open = data['Close'].resample(_YEAR_END_FREQ).first()
-    yearly_close = data['Close'].resample(_YEAR_END_FREQ).last()
+    yearly_close = history['Close'].resample(_YEAR_END_FREQ).last()
+    base = yearly_close.shift(1)
+    base.iloc[0] = history['Close'].resample(_YEAR_END_FREQ).first().iloc[0]
 
-    # Calculate the percentage difference between the first and last closing prices of each year
-    yearly_returns = ((yearly_close - yearly_open) / yearly_open) * 100
-
-    # Drop any potential NaN values (e.g., if there is only one year of data)
-    yearly_returns = yearly_returns.dropna()
-
-    return yearly_returns
+    yearly_returns = ((yearly_close - base) / base) * 100
+    return yearly_returns.dropna()
 
 
 @handle_exceptions
@@ -325,15 +328,21 @@ def display_stock_prices_chart(data1, data2, ticker1, ticker2):
 def display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2):
     st.subheader(f"Stock Price History Normalized: {ticker1} vs {ticker2}")
 
-    # Normalize the stock prices to start at the same value
-    start_price = min(data1['Close'].iloc[0], data2['Close'].iloc[0])
-    data1['Normalized_Price'] = data1['Close'] / data1['Close'].iloc[0] * start_price
-    data2['Normalized_Price'] = data2['Close'] / data2['Close'].iloc[0] * start_price
+    # Rebase both series over the shared window so a ticker with a shorter
+    # history (e.g. a later IPO) isn't normalized from a different date.
+    shared1, shared2, _, _ = get_shared_price_histories(data1, data2)
+    if shared1.empty or shared2.empty:
+        st.warning("No overlapping price history to normalize.")
+        return
+
+    start_price = min(shared1['Close'].iloc[0], shared2['Close'].iloc[0])
+    normalized1 = shared1['Close'] / shared1['Close'].iloc[0] * start_price
+    normalized2 = shared2['Close'] / shared2['Close'].iloc[0] * start_price
 
     # Create traces for each stock
     trace1 = go.Scatter(
-        x=data1.index,
-        y=data1['Normalized_Price'],
+        x=normalized1.index,
+        y=normalized1.values,
         mode='lines',
         name=ticker1,
         line=dict(color=STOCK1_COLOR),
@@ -343,8 +352,8 @@ def display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2):
     )
 
     trace2 = go.Scatter(
-        x=data2.index,
-        y=data2['Normalized_Price'],
+        x=normalized2.index,
+        y=normalized2.values,
         mode='lines',
         name=ticker2,
         line=dict(color=STOCK2_COLOR),
@@ -375,21 +384,6 @@ def display_stock_prices_chart_normalized(data1, data2, ticker1, ticker2):
 
     # Display the interactive chart
     display_plotly_chart(fig)
-
-
-def _close_history(data):
-    if data is None or data.empty or 'Close' not in data.columns:
-        return pd.DataFrame(columns=['Close'])
-
-    history = data[['Close']].dropna().copy().sort_index()
-    if history.empty:
-        return history
-
-    index = pd.DatetimeIndex(history.index)
-    if index.tz is not None:
-        index = index.tz_localize(None)
-    history.index = index
-    return history
 
 
 def get_shared_price_histories(data1, data2):
@@ -496,7 +490,7 @@ def display_yearly_performance_comparison(performance1, performance2, ticker1, t
     display_plotly_chart(fig)
 
 
-def display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date):
+def display_results(ticker1, ticker2, performance1, performance2, data1, data2):
     try:
         if performance1 is None or performance2 is None or performance1.empty or performance2.empty:
             st.warning("Not enough yearly data to compare these tickers.")
@@ -523,7 +517,9 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
             ticker2: performance2.values
         })
 
+        # Ties count for neither, matching the scoreboard above.
         comparison_df['Winner'] = comparison_df[[ticker1, ticker2]].idxmax(axis=1)
+        comparison_df.loc[performance1.values == performance2.values, 'Winner'] = 'Tie'
 
         # Format percentage values
         comparison_df[ticker1] = comparison_df[ticker1].apply(lambda x: f'{x:.2f}%')
@@ -531,10 +527,17 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
 
         def colorize(val, column):
             if column == ticker1 or column == ticker2:
-                color = 'green' if float(val[:-1]) > 0 else 'red'
+                pct = float(val[:-1])
+                if pct == 0:
+                    return 'background-color: gray; color: white'
+                color = 'green' if pct > 0 else 'red'
                 return f'background-color: {color}; color: white'
             elif column == 'Winner':
-                return f'background-color: {STOCK1_COLOR}; color: white' if val == ticker1 else f'background-color: {STOCK2_COLOR}; color: white'
+                if val == ticker1:
+                    return f'background-color: {STOCK1_COLOR}; color: white'
+                if val == ticker2:
+                    return f'background-color: {STOCK2_COLOR}; color: white'
+                return 'background-color: gray; color: white'
             return ''
 
         def style_cells(styler, func, subset):
@@ -555,10 +558,14 @@ def display_results(ticker1, ticker2, performance1, performance2, data1, data2, 
         })
 
         st.write("#### Yearly Comparison Grid by percentage each year")
+        st.caption(
+            "The first row starts at your chosen start date and the last row is "
+            "year-to-date, so those rows may cover partial years."
+        )
         st.dataframe(styled_df)
 
         # Download CSV
-        csv = comparison_df.to_csv().encode('utf-8')
+        csv = comparison_df.to_csv(index=False).encode('utf-8')
         st.download_button(
             label="Download Data as CSV",
             data=csv,
@@ -720,6 +727,175 @@ def display_news(ticker):
                 break
 
 
+@st.cache_data
+def load_etf_analysis():
+    """Load the precomputed ETF-vs-SPY analysis produced by generate_report.py."""
+    path = _find_data_file("analysis_results_ETFS.csv")
+    if path is None:
+        return pd.DataFrame()
+    try:
+        df = pd.read_csv(path)
+    except Exception:
+        return pd.DataFrame()
+    required = {"ticker", "years_outperformed", "investment_value", "outperformed_spy"}
+    if not required.issubset(df.columns):
+        return pd.DataFrame()
+    return df
+
+
+def _is_dark_theme():
+    try:
+        return st.context.theme.type == "dark"
+    except Exception:
+        return False
+
+
+def _build_etf_top_chart(top_df, spy_value, dark):
+    """Ranked horizontal bars of the best $100 outcomes, with SPY as a labeled baseline."""
+    # Single measure -> single hue (validated against Streamlit's light/dark surfaces).
+    bar_color = "#3987e5" if dark else "#2a78d6"
+    muted_ink = "#898781"
+
+    # Direct-label only the extreme; the tooltip and table carry the rest.
+    labels = [""] * len(top_df)
+    if labels:
+        labels[0] = f"${top_df['investment_value'].iloc[0]:,.0f}"
+
+    fig = go.Figure(go.Bar(
+        x=top_df["investment_value"],
+        y=top_df["ticker"],
+        orientation="h",
+        marker_color=bar_color,
+        text=labels,
+        textposition="outside",
+        cliponaxis=False,
+        customdata=top_df["name"],
+        hovertemplate="<b>%{y}</b> — %{customdata}<br>$100 grew to <b>$%{x:,.2f}</b><extra></extra>",
+    ))
+
+    if spy_value is not None:
+        fig.add_vline(x=spy_value, line_dash="dash", line_width=2, line_color=muted_ink)
+        fig.add_annotation(
+            x=spy_value, y=1.02, yref="paper",
+            text=f"SPY: ${spy_value:,.0f}",
+            showarrow=False, font=dict(color=muted_ink, size=13),
+            xanchor="left", yanchor="bottom",
+        )
+
+    fig.update_layout(
+        title=f"Top {len(top_df)} ETFs: What $100 Grew To",
+        xaxis=dict(title="Value of $100 (USD)", tickprefix="$"),
+        yaxis=dict(autorange="reversed"),
+        bargap=0.35,
+        height=max(360, 28 * len(top_df) + 120),
+        margin=dict(l=60, r=40, t=60, b=40),
+        showlegend=False,
+    )
+    return fig
+
+
+def display_etf_analysis(universe_df):
+    st.subheader("ETF Analysis: Who Beats SPY?")
+
+    df = load_etf_analysis()
+    if df.empty:
+        st.info("ETF analysis data (analysis_results_ETFS.csv) was not found.")
+        return
+
+    df = df.copy()
+    df["ticker"] = df["ticker"].astype(str).str.strip().str.upper()
+    # The offline run analyzed some tickers twice (duplicates in the source list).
+    df = df.drop_duplicates(subset="ticker", keep="first")
+
+    # A zero investment value means the offline run couldn't fetch that ticker.
+    skipped = int((df["investment_value"] <= 0).sum())
+    df = df[df["investment_value"] > 0]
+
+    if not universe_df.empty:
+        names = universe_df.drop_duplicates("Ticker").set_index("Ticker")["Name"]
+        df.insert(1, "name", df["ticker"].map(names).fillna(""))
+    else:
+        df.insert(1, "name", "")
+
+    df = df.sort_values("investment_value", ascending=False).reset_index(drop=True)
+
+    spy_rows = df.loc[df["ticker"] == "SPY", "investment_value"]
+    spy_value = spy_rows.iloc[0] if not spy_rows.empty else None
+
+    beat_count = int(df["outperformed_spy"].sum())
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("ETFs Analyzed", len(df))
+    col2.metric("Beat SPY", f"{beat_count} ({beat_count / len(df):.0%})")
+    col3.metric("SPY Baseline ($100 Grew To)", f"${spy_value:.2f}" if spy_value is not None else "N/A")
+    col4.metric("Median ETF Outcome", f"${df['investment_value'].median():.2f}")
+
+    caption = (
+        "Precomputed by generate_report.py: for each ETF, how many of the analyzed years it beat SPY "
+        "and what a $100 investment grew to over the same period (SPY's own row is the baseline)."
+    )
+    if skipped:
+        caption += f" {skipped} ticker(s) with no price data were omitted."
+    st.caption(caption)
+
+    display_plotly_chart(_build_etf_top_chart(df.head(20), spy_value, _is_dark_theme()))
+
+    st.write("#### All ETFs")
+    st.caption("Click a column header to sort, or use the table's search tool to filter.")
+    max_value = float(df["investment_value"].max())
+    st.dataframe(
+        df,
+        hide_index=True,
+        height=600,
+        column_config={
+            "ticker": st.column_config.TextColumn("Ticker"),
+            "name": st.column_config.TextColumn("Name", width="large"),
+            "years_outperformed": st.column_config.NumberColumn("Years Beat SPY"),
+            "investment_value": st.column_config.ProgressColumn(
+                "$100 Grew To", format="$%.2f", min_value=0, max_value=max_value,
+            ),
+            "outperformed_spy": st.column_config.CheckboxColumn("Beat SPY Overall"),
+        },
+    )
+
+
+def display_comparison(ticker1, ticker2, start_date, compare):
+    if not compare:
+        st.title("Stock Performance Comparison")
+        st.write("Compare the performance of two stock tickers from any start date.")
+        return
+
+    if ticker1 == ticker2:
+        st.warning("Pick two different tickers to compare.")
+        return
+
+    data1 = get_stock_data(ticker1, start_date)
+    data2 = get_stock_data(ticker2, start_date)
+    name1 = get_name(ticker1)
+    name2 = get_name(ticker2)
+    st.subheader(f"Comparing {name1} vs {name2}")
+
+    missing = []
+    if data1 is None or data1.empty:
+        missing.append(ticker1)
+    if data2 is None or data2.empty:
+        missing.append(ticker2)
+    if missing:
+        st.error(f"Could not fetch price history for: {', '.join(missing)}. "
+                 f"Check the ticker symbol(s) and try again.")
+        return
+
+    performance1 = calculate_yearly_performance(data1)
+    performance2 = calculate_yearly_performance(data2)
+
+    display_results(ticker1, ticker2, performance1, performance2, data1, data2)
+
+    st.write("---")
+    display_side_by_side_info(ticker1, ticker2)
+    st.write("---")
+    display_news(ticker1)
+    display_news(ticker2)
+
+
 def main():
     universe = load_ticker_universe()
     st.sidebar.header("Pick two to compare")
@@ -737,48 +913,22 @@ def main():
     st.sidebar.write("#### Comparison Options")
     compare = st.sidebar.button("Compare Tickers")
 
-    if not compare:
-        st.title("Stock Performance Comparison")
-        st.write("Compare the performance of two stock tickers over the last 10 years.")
+    tab_compare, tab_etf = st.tabs(["📊 Compare Tickers", "🏆 ETFs vs SPY"])
+    with tab_compare:
+        display_comparison(ticker1, ticker2, start_date, compare)
+    with tab_etf:
+        display_etf_analysis(universe)
 
-    if compare:
-        data1 = get_stock_data(ticker1, start_date)
-        data2 = get_stock_data(ticker2, start_date)
-        name1 = get_name(ticker1)
-        name2 = get_name(ticker2)
-        st.subheader(f"Comparing {name1} vs {name2}")
-
-        missing = []
-        if data1 is None or data1.empty:
-            missing.append(ticker1)
-        if data2 is None or data2.empty:
-            missing.append(ticker2)
-        if missing:
-            st.error(f"Could not fetch price history for: {', '.join(missing)}. "
-                     f"Check the ticker symbol(s) and try again.")
-            return
-
-        if not data1.empty and not data2.empty:
-            performance1 = calculate_yearly_performance(data1)
-            performance2 = calculate_yearly_performance(data2)
-
-            display_results(ticker1, ticker2, performance1, performance2, data1, data2, start_date)
-
-            st.write("---")
-            display_side_by_side_info(ticker1, ticker2)
-            st.write("---")
-            display_news(ticker1)
-            display_news(ticker2)
-            st.markdown("""
-            <hr style="margin-top: 50px;">
-            <div style="text-align: center;">
-                <p style="font-size: 14px;">
-                Developed by <a href="https://github.com/Roialfassi" target="_blank">Roi Alfassi</a> |
-                Powered by <a href="https://streamlit.io/" target="_blank">Streamlit</a> and 
-                <a href="https://pypi.org/project/yfinance/" target="_blank">yFinance</a></p>
-                <p style="font-size: 12px; color: grey;">© 2024 Roi Alfassi. All rights reserved.</p>
-            </div>
-            """, unsafe_allow_html=True)
+    st.markdown("""
+    <hr style="margin-top: 50px;">
+    <div style="text-align: center;">
+        <p style="font-size: 14px;">
+        Developed by <a href="https://github.com/Roialfassi" target="_blank">Roi Alfassi</a> |
+        Powered by <a href="https://streamlit.io/" target="_blank">Streamlit</a> and
+        <a href="https://pypi.org/project/yfinance/" target="_blank">yFinance</a></p>
+        <p style="font-size: 12px; color: grey;">© 2024 Roi Alfassi. All rights reserved.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":

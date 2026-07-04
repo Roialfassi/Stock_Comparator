@@ -1,12 +1,169 @@
 Ticker,Stock Name
+AAPL,Apple Inc.
+AA,Alcoa Corporation
+AFL,Aflac Incorporated
+AMD,Advanced Micro Devices Inc.
+AMZN,Amazon.com Inc.
+AN,AutoNation Inc.
+APA,Apache Corporation
+APD,Air Products and Chemicals Inc.
+AXP,American Express Company
+BA,Boeing Company
+BAC,Bank of America Corporation
+BB,BlackBerry Limited
+BBY,Best Buy Co. Inc.
+BHP,BHP Group Limited
+BLK,BlackRock Inc.
+BMY,Bristol-Myers Squibb Company
+BP,BP plc
+C,Citigroup Inc.
+CAT,Caterpillar Inc.
+COST,Costco Wholesale Corporation
+CSCO,Cisco Systems Inc.
+CVS,CVS Health Corporation
+CVX,Chevron Corporation
+D,Dominion Energy Inc.
+DAL,Delta Air Lines Inc.
+DB,Deutsche Bank AG
+DHR,Danaher Corporation
+DIS,The Walt Disney Company
+DLR,Digital Realty Trust Inc.
+DOCU,DocuSign Inc.
+DUK,Duke Energy Corporation
+E,Eni S.p.A.
+EBAY,eBay Inc.
+ED,Consolidated Edison Inc.
+EMR,Emerson Electric Co.
+ENB,Enbridge Inc.
+ET,Energy Transfer LP
+ETN,Eaton Corporation plc
+EXC,Exelon Corporation
+F,Ford Motor Company
+FB,Meta Platforms Inc.
+FDX,FedEx Corporation
+FE,FirstEnergy Corp.
+FMC,FMC Corporation
+FSLY,Fastly Inc.
+G,GigCapital2 Inc.
+GD,General Dynamics Corporation
+GE,General Electric Company
+GILD,Gilead Sciences Inc.
+GIS,General Mills Inc.
+GLD,SPDR Gold Shares ETF
+GM,General Motors Company
+GOOGL,Alphabet Inc.
+GS,The Goldman Sachs Group Inc.
+H,Hyatt Hotels Corporation
+HAL,Halliburton Company
+HD,The Home Depot Inc.
+HES,Hess Corporation
+HIG,The Hartford Financial Services Group Inc.
+HON,Honeywell International Inc.
+HP,Helmerich & Payne Inc.
+HRB,H&R Block Inc.
+HSY,Hershey Company
+I,Intelsat S.A.
+IBM,International Business Machines Corporation
+ICE,Intercontinental Exchange Inc.
+IEX,IDEX Corporation
+IFF,International Flavors & Fragrances Inc.
+INTC,Intel Corporation
+IP,International Paper Company
+ITW,Illinois Tool Works Inc.
+J,Jacobs Engineering Group Inc.
+JBL,Jabil Inc.
+JCI,Johnson Controls International plc
+JNJ,Johnson & Johnson
+JPM,JPMorgan Chase & Co.
+K,Kellogg Company
+KEY,KeyCorp
+KHC,Kraft Heinz Company
+KMB,Kimberly-Clark Corporation
+KO,The Coca-Cola Company
+KR,Kroger Co.
+L,Loews Corporation
+LHX,L3Harris Technologies Inc.
+LIN,Linde plc
+LLY,Eli Lilly and Company
+LMT,Lockheed Martin Corporation
+LOW,Lowe's Companies Inc.
+LUV,Southwest Airlines Co.
+M,Macy's Inc.
+MA,Mastercard Incorporated
+MCD,McDonald's Corporation
+MDT,Medtronic plc
+MET,MetLife Inc.
+MMM,3M Company
+MO,Altria Group Inc.
+MRK,Merck & Co. Inc.
+MS,Morgan Stanley
+MSFT,Microsoft Corporation
+MU,Micron Technology Inc.
+N,Nokia Corporation
+NCLH,Norwegian Cruise Line Holdings Ltd.
+NEE,NextEra Energy Inc.
+NFLX,Netflix Inc.
+NKE,Nike Inc.
+NOC,Northrop Grumman Corporation
+NTRS,Northern Trust Corporation
+O,Realty Income Corporation
+OXY,Occidental Petroleum Corporation
+P,Pandora Media Inc.
+PBR,Petróleo Brasileiro S.A. - Petrobras
+PEP,PepsiCo Inc.
+PFE,Pfizer Inc.
+PG,Procter & Gamble Co.
+PLD,Prologis Inc.
+PRU,Prudential Financial Inc.
+PSX,Phillips 66
+QCOM,Qualcomm Incorporated
+QQQ,Invesco QQQ Trust
+R,Ryder System Inc.
+RCL,Royal Caribbean Cruises Ltd.
+RE,Everest Re Group Ltd.
+REGN,Regeneron Pharmaceuticals Inc.
+ROK,Rockwell Automation Inc.
+ROST,Ross Stores Inc.
+S,Sprint Corporation
+SBUX,Starbucks Corporation
+SLB,Schlumberger Limited
+SO,The Southern Company
+SPG,Simon Property Group Inc.
 SPY,SPDR S&P 500 ETF Trust
+SQ,Square Inc.
+STT,State Street Corporation
+T,AT&T Inc.
+TGT,Target Corporation
+TJX,TJX Companies Inc.
+TSLA,Tesla Inc.
+TSN,Tyson Foods Inc.
+TWTR,Twitter Inc.
+TXN,Texas Instruments Incorporated
+U,Unity Software Inc.
+UAL,United Airlines Holdings Inc.
+UBER,Uber Technologies Inc.
+UNH,UnitedHealth Group Incorporated
+UPS,United Parcel Service Inc.
+V,Visa Inc.
+VZ,Verizon Communications Inc.
+W,Wayfair Inc.
+WBA,Walgreens Boots Alliance Inc.
+WFC,Wells Fargo & Company
+WMT,Walmart Inc.
+X,United States Steel Corporation
+XEL,Xcel Energy Inc.
+XOM,Exxon Mobil Corporation
+Y,Yahoo! Inc.
+YUM,Yum! Brands Inc.
+Z,Zillow Group Inc.
+ZBH,Zimmer Biomet Holdings Inc.
+ZM,Zoom Video Communications Inc.
+ZTS,Zoetis Inc.
 IVV,iShares Core S&P 500 ETF
 VOO,Vanguard S&P 500 ETF
 VTI,Vanguard Total Stock Market ETF
-QQQ,Invesco QQQ Trust
 IWM,iShares Russell 2000 ETF
 DIA,SPDR Dow Jones Industrial Average ETF Trust
-GLD,SPDR Gold Shares ETF
 SLV,iShares Silver Trust
 TLT,iShares 20+ Year Treasury Bond ETF
 USO,United States Oil Fund LP
@@ -47,11 +204,7 @@ HACK,ETFMG Prime Cyber Security ETF
 BOTZ,Global X Robotics & Artificial Intelligence ETF
 ROBO,ROBO Global Robotics & Automation Index ETF
 FTEC,Fidelity MSCI Information Technology Index ETF
-XLV,Health Care Select Sector SPDR Fund
 IHI,iShares U.S. Medical Devices ETF
-IBB,iShares Nasdaq Biotechnology ETF
-XBI,SPDR S&P Biotech ETF
-FTEC,Fidelity MSCI Information Technology Index ETF
 VO,Vanguard Mid-Cap ETF
 VB,Vanguard Small-Cap ETF
 VNQ,Vanguard Real Estate ETF
@@ -80,7 +233,6 @@ MUB,iShares National Muni Bond ETF
 PFF,iShares Preferred and Income Securities ETF
 REM,iShares Mortgage Real Estate ETF
 SRLN,SPDR Blackstone Senior Loan ETF
-SPHD,Invesco S&P 500 High Dividend Low Volatility ETF
 VCSH,Vanguard Short-Term Corporate Bond ETF
 VGSH,Vanguard Short-Term Treasury ETF
 MGK,Vanguard Mega Cap Growth ETF
@@ -107,31 +259,24 @@ SCHG,Schwab U.S. Large-Cap Growth ETF
 FNDX,Schwab Fundamental U.S. Large Company Index ETF
 FNDA,Schwab Fundamental U.S. Small Company Index ETF
 FNDB,Schwab Fundamental U.S. Broad Market Index ETF
-FNDX,Schwab Fundamental U.S. Large Company Index ETF
 FNDF,Schwab Fundamental International Large Company Index ETF
 SCHF,Schwab International Equity ETF
 SCHE,Schwab Emerging Markets Equity ETF
 SCHC,Schwab International Small-Cap Equity ETF
-SCHF,Schwab International Equity ETF
 BIV,Vanguard Intermediate-Term Bond ETF
 BLV,Vanguard Long-Term Bond ETF
-VGSH,Vanguard Short-Term Treasury ETF
 VBK,Vanguard Small-Cap Growth ETF
 VBR,Vanguard Small-Cap Value ETF
 IWF,iShares Russell 1000 Growth ETF
 IWD,iShares Russell 1000 Value ETF
-VIG,Vanguard Dividend Appreciation ETF
 VTIP,Vanguard Short-Term Inflation-Protected Securities ETF
-VNQI,Vanguard Global ex-U.S. Real Estate ETF
 VPL,Vanguard FTSE Pacific ETF
 VGK,Vanguard FTSE Europe ETF
-VSS,Vanguard FTSE All-World ex-US Small-Cap ETF
 IXUS,iShares Core MSCI Total International Stock ETF
 ACWI,iShares MSCI ACWI ETF
 VYMI,Vanguard International High Dividend Yield ETF
 DWX,SPDR S&P International Dividend ETF
 HDV,iShares Core High Dividend ETF
-SPHD,Invesco S&P 500 High Dividend Low Volatility ETF
 GUNR,FlexShares Morningstar Global Upstream Natural Resources ETF
 PPA,Invesco Aerospace & Defense ETF
 VGT,Vanguard Information Technology ETF
@@ -139,28 +284,11 @@ VOX,Vanguard Communication Services ETF
 VIGI,Vanguard International Dividend Appreciation ETF
 BIZD,VanEck Vectors BDC Income ETF
 FTSM,Federated Hermes Short-Term Municipal Income Fund
-Ticker,Name
-SPY,SPDR S&P 500 ETF Trust
-VOO,Vanguard S&P 500 ETF
-VTI,Vanguard Total Stock Market ETF
-QQQ,Invesco QQQ Trust
-IVV,iShares Core S&P 500 ETF
-VEA,Vanguard FTSE Developed Markets ETF
+TICKER,Name
 IEFA,iShares Core MSCI EAFE ETF
-AGG,iShares Core U.S. Aggregate Bond ETF
-VWO,Vanguard FTSE Emerging Markets ETF
-BND,Vanguard Total Bond Market ETF
-VIG,Vanguard Dividend Appreciation ETF
 IJR,iShares Core S&P Small-Cap ETF
-VNQ,Vanguard Real Estate ETF
 VXUS,Vanguard Total International Stock ETF
 VEU,Vanguard FTSE All-World ex-US ETF
-DIA,SPDR Dow Jones Industrial Average ETF
-XLF,Financial Select Sector SPDR Fund
-XLE,Energy Select Sector SPDR Fund
-XLK,Technology Select Sector SPDR Fund
-XLV,Health Care Select Sector SPDR Fund
-VGT,Vanguard Information Technology ETF
 VHT,Vanguard Health Care ETF
 VFH,Vanguard Financials ETF
 VCR,Vanguard Consumer Discretionary ETF
@@ -168,37 +296,14 @@ VDC,Vanguard Consumer Staples ETF
 VPU,Vanguard Utilities ETF
 VAW,Vanguard Materials ETF
 VIS,Vanguard Industrials ETF
-VDE,Vanguard Energy ETF
 EEM,iShares MSCI Emerging Markets ETF
-EFA,iShares MSCI EAFE ETF
-LQD,iShares iBoxx $ Investment Grade Corporate Bond ETF
-TLT,iShares 20+ Year Treasury Bond ETF
-GLD,SPDR Gold Shares
-SLV,iShares Silver Trust
-USO,United States Oil Fund
 UNG,United States Natural Gas Fund
-VYM,Vanguard High Dividend Yield ETF
-SCHD,Schwab U.S. Dividend Equity ETF
-HDV,iShares Core High Dividend ETF
 RSP,Invesco S&P 500 Equal Weight ETF
-SPLV,Invesco S&P 500 Low Volatility ETF
 USMV,iShares MSCI USA Min Vol Factor ETF
-MTUM,iShares MSCI USA Momentum Factor ETF
-QUAL,iShares MSCI USA Quality Factor ETF
 SIZE,iShares MSCI USA Size Factor ETF
-IWM,iShares Russell 2000 ETF
 MDY,SPDR S&P MidCap 400 ETF
 IJH,iShares Core S&P Mid-Cap ETF
-VB,Vanguard Small-Cap ETF
-VO,Vanguard Mid-Cap ETF
 VV,Vanguard Large-Cap ETF
-VUG,Vanguard Growth ETF
-VTV,Vanguard Value ETF
-IWF,iShares Russell 1000 Growth ETF
-IWD,iShares Russell 1000 Value ETF
-SCZ,iShares MSCI EAFE Small-Cap ETF
-VSS,Vanguard FTSE All-World ex-US Small-Cap ETF
-VGK,Vanguard FTSE Europe ETF
 EWJ,iShares MSCI Japan ETF
 MCHI,iShares MSCI China ETF
 EWZ,iShares MSCI Brazil ETF
@@ -207,16 +312,8 @@ EWA,iShares MSCI Australia ETF
 RSX,VanEck Russia ETF
 EPI,WisdomTree India Earnings Fund
 THD,iShares MSCI Thailand ETF
-ARKK,ARK Innovation ETF
-ARKG,ARK Genomic Revolution ETF
 ARKW,ARK Next Generation Internet ETF
-ARKF,ARK Fintech Innovation ETF
-ICLN,iShares Global Clean Energy ETF
-TAN,Invesco Solar ETF
 FAN,First Trust Global Wind Energy ETF
-PBW,Invesco WilderHill Clean Energy ETF
-ROBO,ROBO Global Robotics and Automation Index ETF
-BOTZ,Global X Robotics & Artificial Intelligence ETF
 SKYY,First Trust Cloud Computing ETF
 CIBR,First Trust NASDAQ Cybersecurity ETF
 SOCL,Global X Social Media ETF
@@ -225,34 +322,16 @@ FINX,Global X FinTech ETF
 IBUY,Amplify Online Retail ETF
 JETS,U.S. Global Jets ETF
 AWAY,ETFMG Travel Tech ETF
-REMX,VanEck Rare Earth/Strategic Metals ETF
 LIT,Global X Lithium & Battery Tech ETF
 COPX,Global X Copper Miners ETF
 SIL,Global X Silver Miners ETF
-GDXJ,VanEck Junior Gold Miners ETF
-XME,SPDR S&P Metals & Mining ETF
-KRE,SPDR S&P Regional Banking ETF
 XHB,SPDR S&P Homebuilders ETF
 ITB,iShares U.S. Home Construction ETF
 XRT,SPDR S&P Retail ETF
-XBI,SPDR S&P Biotech ETF
-IBB,iShares Nasdaq Biotechnology ETF
-IYR,iShares U.S. Real Estate ETF
 SCHH,Schwab U.S. REIT ETF
-IEMG,iShares Core MSCI Emerging Markets ETF
 VXF,Vanguard Extended Market ETF
 VTEB,Vanguard Tax-Exempt Bond ETF
-BNDX,Vanguard Total International Bond ETF
-MUB,iShares National Muni Bond ETF
-HYG,iShares iBoxx $ High Yield Corporate Bond ETF
-JNK,SPDR Bloomberg High Yield Bond ETF
-VCIT,Vanguard Intermediate-Term Corporate Bond ETF
-VCSH,Vanguard Short-Term Corporate Bond ETF
-SHY,iShares 1-3 Year Treasury Bond ETF
-IEF,iShares 7-10 Year Treasury Bond ETF
 GOVT,iShares U.S. Treasury Bond ETF
-VTIP,Vanguard Short-Term Inflation-Protected Securities ETF
-TIP,iShares TIPS Bond ETF
 PDBC,Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF
 DBC,Invesco DB Commodity Index Tracking Fund
 USCI,United States Commodity Index Fund
@@ -272,7 +351,6 @@ EWY,iShares MSCI South Korea ETF
 EWT,iShares MSCI Taiwan ETF
 EWS,iShares MSCI Singapore ETF
 EWM,iShares MSCI Malaysia ETF
-THD,iShares MSCI Thailand ETF
 EPHE,iShares MSCI Philippines ETF
 EWW,iShares MSCI Mexico ETF
 ECH,iShares MSCI Chile ETF
@@ -285,22 +363,15 @@ AFK,VanEck Africa Index ETF
 EGPT,VanEck Egypt Index ETF
 VNM,VanEck Vietnam ETF
 GREK,Global X MSCI Greece ETF
-EFAV,iShares Edge MSCI Min Vol EAFE ETF
-ACWI,iShares MSCI ACWI ETF
 ACWX,iShares MSCI ACWI ex U.S. ETF
 CWI,SPDR MSCI ACWI ex-US ETF
-DWX,SPDR S&P International Dividend ETF
 DGRO,iShares Core Dividend Growth ETF
 NOBL,ProShares S&P 500 Dividend Aristocrats ETF
 SDY,SPDR S&P Dividend ETF
-DVY,iShares Select Dividend ETF
 FVD,First Trust Value Line Dividend Index Fund
 FDL,First Trust Morningstar Dividend Leaders Index Fund
-SPHD,Invesco S&P 500 High Dividend Low Volatility ETF
 SPYD,SPDR Portfolio S&P 500 High Dividend ETF
-PFF,iShares Preferred and Income Securities ETF
 PFXF,VanEck Vectors Preferred Securities ex Financials ETF
-SRLN,SPDR Blackstone Senior Loan ETF
 BKLN,Invesco Senior Loan ETF
 FLOT,iShares Floating Rate Bond ETF
 VMBS,Vanguard Mortgage-Backed Securities ETF
@@ -320,8 +391,6 @@ USFR,WisdomTree Floating Rate Treasury Fund
 TFLO,iShares Treasury Floating Rate Bond ETF
 ICSH,iShares Ultra Short-Term Bond ETF
 NEAR,iShares Short Maturity Bond ETF
-VGSH,Vanguard Short-Term Treasury ETF
-VGIT,Vanguard Intermediate-Term Treasury ETF
 VGLT,Vanguard Long-Term Treasury ETF
 SCHO,Schwab Short-Term U.S. Treasury ETF
 SCHR,Schwab Intermediate-Term U.S. Treasury ETF
@@ -330,7 +399,6 @@ SPTI,SPDR Portfolio Intermediate Term Treasury ETF
 SPTL,SPDR Portfolio Long Term Treasury ETF
 IEI,iShares 3-7 Year Treasury Bond ETF
 VWOB,Vanguard Emerging Markets Government Bond ETF
-EMB,iShares J.P. Morgan USD Emerging Markets Bond ETF
 PCY,Invesco Emerging Markets Sovereign Debt ETF
 EMLC,VanEck J.P. Morgan EM Local Currency Bond ETF
 IAGG,iShares Core International Aggregate Bond ETF
